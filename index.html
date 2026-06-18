@@ -751,7 +751,7 @@ function fixTypographyEN(t, uk){
   t = smartQuotesEN(t, uk);                                           // curly quotes (US: " primary; UK: ' primary)
   return t;                                                           // no hard spaces, no dash-dialogue, no didascalia
 }
-function sceneMarker(){ return LANG==="en" ? "#" : "* * *"; }
+function sceneMarker(){ return (LANG==="en" && project.settings.profile==="maszynopis") ? "#" : "* * *"; }
 function fixTypography(t){
   if(LANG === "en") return fixTypographyEN(t, VARIANT === "uk");
   // 0. przytnij i zredukuj wielokrotne spacje
@@ -945,7 +945,7 @@ function extractParas(container){
     else if(p.classList.contains("header")) type = "header";
     else if(p.classList.contains("scene")) type = "scene";
     else if(p.classList.contains("first")) type = "first";
-    out.push({ type, runs: paraRuns(p) });
+    out.push({ type, runs: type === "scene" ? [{ text: sceneMarker(), italic:false }] : paraRuns(p) });
   });
   return out;
 }
@@ -1214,7 +1214,7 @@ function chapterParts(ch, n, toc){
   if(!ps.length) return null;
   const titlePara = ps.find(p=>p.type==="chtitle") || null;
   const headerPara = ps.find(p=>p.type==="header") || null;
-  const anchor = "rozdzial-" + n;
+  const anchor = "chapter-" + n;
   let h1text, h2text = "";
   if(titlePara){ h1text = ebookPlainText(titlePara.runs); if(headerPara) h2text = ebookPlainText(headerPara.runs); }
   else if(headerPara){ h1text = ebookPlainText(headerPara.runs); }

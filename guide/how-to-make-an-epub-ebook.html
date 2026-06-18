@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to make an EPUB e-book yourself — Akapitly</title>
+<meta name="description" content="How an EPUB differs from a PDF, how to make a finished EPUB from your manuscript in Akapitly, how to check it in Calibre, and where to publish an e-book (ISBN, Amazon KDP, Draft2Digital, Kobo, Apple Books).">
+<script>try{if(localStorage.getItem('akapitly_theme')==='light')document.documentElement.classList.add('light');}catch(e){}</script>
+<meta name="theme-color" content="#1c2630">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMyZTZhYTMiLz48dGV4dCB4PSIzMiIgeT0iMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjQyIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRkJGOEYyIj5BPC90ZXh0Pjwvc3ZnPg==">
+<link rel="canonical" href="https://akapitly.com/guide/how-to-make-an-epub-ebook.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Akapitly">
+<meta property="og:title" content="How to make an EPUB e-book yourself">
+<meta property="og:description" content="How an EPUB differs from a PDF, how to make the finished file in Akapitly, check it in Calibre, and where to publish.">
+<meta property="og:url" content="https://akapitly.com/guide/how-to-make-an-epub-ebook.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="styl.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to make an EPUB e-book yourself","inLanguage":"en","datePublished":"2026-06-18","dateModified":"2026-06-18","author":{"@type":"Organization","name":"Akapitly"},"publisher":{"@type":"Organization","name":"Akapitly"},"mainEntityOfPage":"https://akapitly.com/guide/how-to-make-an-epub-ebook.html"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Akapitly","item":"https://akapitly.com/"},{"@type":"ListItem","position":2,"name":"Guide","item":"https://akapitly.com/guide/"},{"@type":"ListItem","position":3,"name":"How to make an EPUB e-book"}]}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="/" title="Akapitly — the app"><span class="dot"></span><span class="wordmark">Akapitly</span></a>
+  <span class="crumb">Guide</span>
+  <span class="spacer"></span>
+  <a class="navlink" href="/">Open the app</a>
+  <button id="themeBtn" title="Toggle light / dark theme">Light</button>
+</header>
+
+<div class="wrap">
+  <nav class="crumbs"><a href="/">Akapitly</a> › <a href="/guide/">Guide</a> › How to make an EPUB e-book</nav>
+  <div class="card">
+  <article>
+    <h1>How to make an EPUB e-book yourself</h1>
+    <p class="lead">An e-book isn't a PDF. It's text that flows and adapts to the screen — the reader chooses the typeface and its size, and the words reflow to fit. That's why a proper EPUB reads well on a phone and on an e-reader alike, while a PDF stays a frozen, tiny page.</p>
+    <p>Akapitly makes a finished EPUB from your manuscript in one click. Below is the whole path — and the parts that stay on your side.</p>
+
+    <h2>EPUB, not PDF — and why it matters</h2>
+    <p>An EPUB is <i>reflowable</i>: the text has no fixed pages, so it looks equally good on a small phone and a large e-reader, and bumping up the font size simply pours the paragraphs further along. A PDF works the opposite way — it's an image of a specific page, which on a phone shrinks to an unreadable size. For prose, the format is EPUB.</p>
+    <p>The exception is Kindle, which has its own format — but even there you upload an EPUB to Amazon KDP and it converts the file for you. In practice, one good EPUB covers most stores.</p>
+
+    <h2>A clean text first</h2>
+    <p>An e-book is like any export: what you put in is what comes out. Before you click <b>Download EPUB</b>, sort out the chapters and the typography. Chapters matter twice over, because the EPUB builds its table of contents and section breaks from them. The typography (dialogue, quotation marks, ellipses) is handled by the same <b>Format</b> button as in the other profiles.</p>
+    <div class="app">
+      <span class="tag">In Akapitly</span>
+      <p>Set up your chapters in the <b>Chapters</b> panel on the left, click <b>Format</b>, and enter the title in the <b>Title page &amp; submission</b> panel → <b>Manuscript title</b>. That title goes into the EPUB (without it, the file is simply named "E-book").</p>
+    </div>
+
+    <h2>Exporting the EPUB</h2>
+    <p>Switch the profile to <b>e-Book</b>. From that point the geometry settings — margins, page size — stop mattering, because the text is reflowable. From here you have two routes.</p>
+    <p>The first, simpler one: a finished EPUB file. The second, for those who want to polish a little more: reflowable HTML for the Calibre program, where you finish the job.</p>
+    <div class="app">
+      <span class="tag">In Akapitly</span>
+      <p>In the e-Book profile click <b>Download EPUB</b> → you get a finished <b>.epub</b> file (EPUB 3 with an interactive table of contents, chapter breaks and an NCX for older readers). Or <b>Download e-book</b> → reflowable <b>.html</b> for Calibre (chapter titles as headings, an automatic contents list, screen breaks before chapters, and non-breaking spaces turned back into ordinary ones so the text scales well). Everything is computed locally — your text is never sent anywhere.</p>
+    </div>
+
+    <h2>Always check it in a reader or in Calibre</h2>
+    <p>Before you send the EPUB anywhere, open it and look through it. Check that the chapters break where they should, that the table of contents jumps to the right places, that the dashes and ellipses (—, …) render correctly, and that nothing falls apart at a small or a large font size.</p>
+    <p>The easiest way to do this is in <b>Calibre</b> — the free, standard e-book program. You open the file in it, preview it as if on a reader, and while you're there add a cover and fill in the book's details.</p>
+
+    <h2>What Akapitly won't do (and that's fine)</h2>
+    <p>Akapitly gives you a clean, valid EPUB with a chapter structure and a table of contents. It won't do three things for you: the <b>cover</b>, the full <b>metadata</b> (ISBN, description, author, categories) and <b>distribution</b>. The cover and metadata are easiest to add in Calibre, and the selling happens on a publishing platform. That's a natural division of labor — a text tool makes the text, not the marketing.</p>
+
+    <h2>ISBN and where to publish</h2>
+    <p>An ISBN usually isn't required to publish on the big stores — Amazon will assign its own identifier (an ASIN), and most retailers let you list without one. It becomes useful for wider distribution, for libraries, and if you want a single identity for the book across stores. One number identifies one format, so an EPUB and a print edition need separate ISBNs.</p>
+    <p>Where you get an ISBN depends on your country: in the United States they're sold through <b>Bowker</b> (MyIdentifiers), in the United Kingdom through the <b>Nielsen</b> ISBN Store, and many countries have a national agency that issues them free or cheaply. Some aggregators also hand you a free ISBN when you publish through them.</p>
+    <p>You upload the finished EPUB to a self-publishing platform — that's a topic of its own, and you should check each one's current requirements as you go. The common choices are <b>Amazon KDP</b> (global reach; the EPUB is uploaded and converted to the Kindle format), <b>Apple Books</b>, <b>Kobo Writing Life</b>, <b>Google Play Books</b> and <b>Barnes &amp; Noble Press</b>. To reach many stores at once you can go through an aggregator such as <b>Draft2Digital</b> or <b>IngramSpark</b> (the latter also handles print and library distribution). You can also sell the file directly from your own site — no middleman, no commission.</p>
+
+    <p class="note">One well-prepared EPUB will serve most of these places. The rest — cover, blurb, price, promotion — is work around the book, not on the text itself.</p>
+
+    <p>Before you make an e-book, it's worth having the text buttoned up: there's a <a href="manuscript-format-for-submission.html">separate guide</a> on formatting a manuscript, one on <a href="dialogue-in-english-prose.html">dialogue in English prose</a>, and one on how not to sound like a bot — <a href="machine-style-ai-prose.html">AI Detox</a>.</p>
+
+    <div class="cta">
+      <p>Switch the profile to e-Book and click Download EPUB — the finished file is built in your browser, for free.</p>
+      <a class="btn" href="/">Open Akapitly</a>
+    </div>
+  </article>
+  </div>
+</div>
+
+<footer class="foot">
+  <a href="/">Akapitly app</a>
+  <a href="/guide/">Guide</a>
+  <a href="mailto:info@akapitly.com">Contact</a>
+  <span class="sp"></span>
+  <span>Your text never leaves your computer. Akapitly is free.</span>
+</footer>
+
+<script>
+(function(){var b=document.getElementById('themeBtn');function s(){b.textContent=document.documentElement.classList.contains('light')?'Dark':'Light';}s();b.addEventListener('click',function(){var l=document.documentElement.classList.toggle('light');try{localStorage.setItem('akapitly_theme',l?'light':'dark');}catch(e){}s();});})();
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

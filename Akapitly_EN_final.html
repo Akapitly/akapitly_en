@@ -1,0 +1,2771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-en="Akapitly — manuscript editor for writers">Akapitly — manuscript editor for writers</title>
+<meta name="description" content="Free manuscript editor for writers: US/UK typography, prose rhythm and style analysis, export to Word and EPUB. Runs in your browser — your text stays on your computer.">
+<meta name="theme-color" content="#1c2630">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMyZTZhYTMiLz48dGV4dCB4PSIzMiIgeT0iMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjQyIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRkJGOEYyIj5BPC90ZXh0Pjwvc3ZnPg==">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Akapitly">
+<meta property="og:title" content="Akapitly — manuscript editor for writers">
+<meta property="og:description" content="Free manuscript editor for writers: US/UK typography, rhythm and style analysis, export to Word and EPUB. Your text never leaves your computer.">
+<meta property="og:url" content="https://akapitly.com/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{
+    --desk:#1c2630; --desk-2:#243140; --paper:#FBF8F2; --ink:#15110c;
+    --chrome:#e9eef3; --muted:#8aa0b4; --prussian:#2e6aa3; --prussian-2:#3a83c7;
+    --hair:rgba(255,255,255,.10); --ok:#3f9d7a; --warn:#e0a64a; --danger:#c95640;
+    --violet:#9b6fb0; --violet-2:#c0a3d0;
+    --surface:#1a232e; --surface-2:#1e2a37; --txt:#cbd8e4; --txt-strong:#ffffff;
+    --hair-2:rgba(255,255,255,.05); --glass:rgba(28,38,48,.86);
+  }
+  html.light{
+    --desk:#e8ecf1; --desk-2:#f6f8fb; --chrome:#1d2731; --muted:#5a6976;
+    --hair:rgba(0,0,0,.12); --hair-2:rgba(0,0,0,.07);
+    --surface:#ffffff; --surface-2:#eef3f8; --txt:#2b3742; --txt-strong:#0f1620;
+    --glass:rgba(246,248,251,.88); --prussian-2:#2c6bad;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--desk);color:var(--chrome);
+    font-family:"Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  header.bar{display:flex;align-items:baseline;gap:16px;padding:18px 26px;border-bottom:1px solid var(--hair)}
+  .bar h1{font-size:15px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin:0;color:var(--txt-strong)}
+  .bar .tag{color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+  .bar .dot{width:7px;height:7px;border-radius:50%;background:var(--prussian-2);display:inline-block;margin-right:11px;vertical-align:middle}
+  .bar .spacer{flex:1}
+  .bar .saved{font-size:11.5px;color:var(--muted);letter-spacing:.03em}
+  .bar .saved b{color:var(--ok);font-weight:600}
+  #mobileGate{display:none}
+  @media (max-width:820px){
+    header.bar, main{display:none}
+    #mobileGate{display:flex;min-height:100vh;min-height:100dvh;align-items:center;justify-content:center;padding:28px 22px;box-sizing:border-box;background:var(--desk)}
+    html.mg-go header.bar{display:flex}
+    html.mg-go main{display:grid}
+    html.mg-go #mobileGate{display:none}
+  }
+  #mobileGate .mg-card{width:100%;max-width:340px;text-align:center;color:var(--chrome)}
+  #mobileGate .mg-logo{font-size:14px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--txt-strong);margin-bottom:16px}
+  #mobileGate .mg-card h2{font-size:19px;line-height:1.3;font-weight:600;color:var(--txt-strong);margin:0 0 12px}
+  #mobileGate .mg-card p{font-size:15px;line-height:1.6;color:var(--txt);margin:0 0 12px}
+  #mobileGate .mg-sub{font-size:14px;color:var(--muted)}
+  #mobileGate #mobileGateBtn{margin-top:8px}
+
+  main{display:grid;grid-template-columns:400px 1fr;height:calc(100% - 59px)}
+  @media (max-width:980px){main{grid-template-columns:1fr;height:auto}}
+
+  .rail{background:var(--desk-2);border-right:1px solid var(--hair);padding:20px;overflow:auto}
+  .rail .field{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+
+  /* chapter list */
+  .chapters{margin:22px 0 20px}
+  .chapters .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .chapters .head .field{margin:0}
+  .clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .citem{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:9px 10px;cursor:pointer;transition:border-color .12s,background .12s}
+  .citem:hover{border-color:var(--prussian-2)}
+  .citem.active{border-color:var(--prussian-2);background:var(--surface-2);box-shadow:inset 3px 0 0 var(--prussian-2)}
+  .citem .ctitle{flex:1;font-size:13px;color:var(--chrome);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .citem .cmeta{font-size:10.5px;color:var(--muted);letter-spacing:.02em;flex-shrink:0}
+  .citem .cmove{display:flex;gap:2px;flex-shrink:0}
+  .citem .iconbtn{background:transparent;border:1px solid transparent;color:var(--muted);border-radius:5px;width:24px;height:24px;padding:0;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .citem .iconbtn:hover{color:var(--txt-strong);border-color:var(--hair)}
+  .citem .iconbtn.del:hover{color:var(--danger);border-color:rgba(201,86,64,.5)}
+  .citem .iconbtn:disabled{opacity:.25;cursor:not-allowed}
+  button.addch{width:100%;margin-top:10px;background:transparent;color:var(--chrome);border:1px dashed var(--hair);border-radius:8px;padding:10px;cursor:pointer;font:inherit;font-size:13px;transition:border-color .12s,color .12s}
+  button.addch:hover{border-color:var(--prussian-2);color:var(--txt-strong)}
+
+  textarea#src{width:100%;min-height:180px;resize:vertical;background:var(--surface);color:var(--chrome);border:1px solid var(--hair);border-radius:8px;padding:12px 13px;font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.55}
+  textarea#src:focus,input:focus,select:focus{outline:2px solid var(--prussian-2);outline-offset:1px;border-color:transparent}
+  .row{display:flex;gap:10px;margin-top:12px}
+  input[type=text],input[type=number],select{width:100%;background:var(--surface);color:var(--chrome);border:1px solid var(--hair);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit}
+  .check{display:flex;align-items:flex-start;gap:9px;margin-top:14px;cursor:pointer;user-select:none}
+  .check input{margin-top:2px;width:15px;height:15px;accent-color:var(--prussian-2)}
+  .check span{font-size:12.5px;color:var(--chrome)}
+  .btns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  button{font:inherit;font-weight:600;font-size:13px;letter-spacing:.01em;border:1px solid transparent;border-radius:8px;padding:11px 16px;cursor:pointer;transition:background .15s,border-color .15s,transform .04s}
+  button:active{transform:translateY(1px)}
+  button.primary{background:var(--prussian);color:#fff}
+  button.primary:hover{background:var(--prussian-2)}
+  button.ghost{background:transparent;color:var(--chrome);border-color:var(--hair)}
+  button.ghost:hover{border-color:var(--prussian-2);color:var(--txt-strong)}
+  button.danger{background:transparent;color:var(--muted);border-color:var(--hair)}
+  button.danger:hover{border-color:rgba(201,86,64,.6);color:var(--danger)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button:focus-visible{outline:2px solid var(--prussian-2);outline-offset:2px}
+  .hint{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.5}
+
+  /* basic stats */
+  .basic{margin-top:16px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:12px 14px}
+  .basic .brow{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--txt)}
+  .basic .brow b{color:var(--txt-strong);font-weight:600}
+  .basic .btot{margin-top:7px;padding-top:7px;border-top:1px solid var(--hair-2);font-size:11.5px;color:var(--muted)}
+  .basic .btot b{color:var(--prussian-2)}
+
+  /* collapsible panels */
+  details.panel{margin-top:22px;border-top:1px solid var(--hair);padding-top:16px}
+  details.panel summary{cursor:pointer;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);list-style:none;display:flex;align-items:center;gap:8px}
+  details.panel summary::-webkit-details-marker{display:none}
+  details.panel summary::before{content:"›";color:var(--prussian-2);font-size:16px;transition:transform .15s;display:inline-block}
+  details.panel[open] summary::before{transform:rotate(90deg)}
+  .panel h4{margin:16px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--prussian-2)}
+  .panel ul{margin:0;padding:0;list-style:none}
+  .panel li{position:relative;padding:3px 0 3px 20px;font-size:12.5px;color:var(--txt);line-height:1.45}
+  .panel li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--ok)}
+
+  /* format settings */
+  .seg{display:flex;gap:8px;margin:10px 0 4px}
+  .seg button{flex:1;padding:9px 8px;font-size:12.5px}
+  .seg button.on{background:var(--prussian);color:#fff;border-color:transparent}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:12px}
+  .fgrid label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+  .fgrid .full{grid-column:1 / -1}
+
+  /* stage / page */
+  .stage{overflow:auto;padding:40px 24px 80px;display:flex;justify-content:center;align-items:flex-start;background:radial-gradient(1200px 600px at 50% -200px, rgba(58,131,199,.10), transparent 60%),var(--desk)}
+  .pagewrap{width:var(--pg-w,210mm);max-width:100%}
+  .toolbar{position:sticky;top:0;z-index:5;width:100%;display:flex;gap:8px;align-items:center;margin-bottom:14px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--hair);border-radius:10px;padding:8px 10px;flex-wrap:wrap}
+  .toolbar .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+  .toolbar button{padding:8px 13px;font-size:12.5px}
+  .toolbar .spacer{flex:1}
+  .filename{font-size:12px;color:var(--muted);max-width:28%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .page{
+    width:var(--pg-w,210mm);min-height:var(--pg-h,297mm);background:var(--paper);color:var(--ink);
+    padding:var(--pg-mt,25.4mm) var(--pg-mr,25.4mm) var(--pg-mb,25.4mm) var(--pg-ml,25.4mm);
+    box-shadow:0 1px 0 rgba(255,255,255,.04), 0 24px 60px rgba(0,0,0,.45);border-radius:2px;
+    font-family:"Times New Roman","Tinos",Times,serif;
+    font-size:var(--pg-fs,12pt);line-height:var(--pg-lh,1.5);text-align:justify;position:relative;-webkit-font-smoothing:auto;
+  }
+  .page:focus{outline:none}
+  .page .empty{color:#9a9082;font-style:italic;text-align:center;margin-top:60px}
+  .page p{margin:0;text-indent:var(--pg-indent,12.5mm);text-align:justify;hyphens:none}
+  .page p.body.first{text-indent:0}
+  .page p.scene{text-indent:0;text-align:center;margin:10pt 0}
+  .page p.chtitle{text-indent:0;text-align:center;margin:0 0 6pt;font-variant:small-caps;letter-spacing:.04em}
+  .page p.header{text-indent:0;text-align:center;font-style:italic;margin:0 0 18pt}
+
+  .toolbar button.active{background:var(--prussian);color:#fff;border-color:transparent}
+  .page.analyze p.body{position:relative}
+  .page.analyze p.body[data-wc]::after{content:attr(data-wc);position:absolute;right:calc(6mm - var(--pg-mr,25.4mm));top:.1em;font-family:"Inter",sans-serif;font-size:8.5pt;font-style:normal;color:#9a8a6c;letter-spacing:.02em;white-space:nowrap}
+  @media (max-width:1100px){.page.analyze p.body[data-wc]::after{right:0;top:-1.4em;background:rgba(251,248,242,.92);padding:0 4px;border-radius:3px}}
+
+  .stats{margin-top:22px;border-top:1px solid var(--hair);padding-top:16px;display:none}
+  .stats.show{display:block}
+  .stats h4{margin:0 0 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--prussian-2)}
+  .stat{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0;color:var(--txt);border-bottom:1px solid var(--hair-2)}
+  .stat b{color:var(--txt-strong);font-weight:600}
+  .stat.flag b{color:var(--warn)}
+  .stat.flagv b{color:var(--violet-2)}
+  .legend{margin-top:13px;font-size:11.5px;color:var(--muted);line-height:1.55}
+  .legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .legend .cap{color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.08em;margin:9px 0 5px}
+  .legend .sub{margin-top:9px;color:var(--muted)}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#11161c;color:#fff;border:1px solid var(--hair);border-radius:9px;padding:11px 18px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:80vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .backup{display:flex;gap:8px;margin-top:8px}
+  button.mini{flex:1;padding:8px 6px;font-size:11.5px;font-weight:500}
+  textarea#inContact{width:100%;resize:vertical;background:var(--surface);color:var(--chrome);border:1px solid var(--hair);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:12.5px;line-height:1.5}
+  .spark{margin-top:14px}
+  .spark .sparkhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  #sparkbox{background:var(--surface);border:1px solid var(--hair);border-radius:6px;padding:6px 8px;min-height:34px;display:flex;align-items:center}
+  #sparkbox svg{display:block}
+  .sparkempty{color:var(--muted)}
+  .freqsec{margin-bottom:14px}
+  .freqh{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--prussian-2);margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:4px 10px;font-size:12px;color:var(--txt)}
+  .chip b{color:var(--warn);font-weight:600;margin-left:3px}
+  .echoes,.openings{list-style:none;margin:0;padding:0}
+  .echoes li,.openings li{display:flex;justify-content:space-between;gap:10px;padding:6px 8px;font-size:12.5px;color:var(--txt);border-bottom:1px solid var(--hair-2);cursor:pointer;border-radius:6px;transition:background .12s,box-shadow .12s}
+  .echoes li:hover,.openings li:hover{background:var(--surface)}
+  .echoes li.active,.openings li.active{background:rgba(155,111,176,.16);box-shadow:inset 3px 0 0 var(--violet)}
+  .echoes li.active>span:first-child,.openings li.active>span:first-child{color:var(--txt-strong);font-weight:600}
+  .echoes .dist,.openings .dist{color:var(--violet-2);font-size:11.5px;white-space:nowrap}
+  .chip{cursor:pointer;transition:background .12s,border-color .12s}
+  .chip:hover{border-color:var(--prussian)}
+  .chip.active{background:var(--prussian);border-color:var(--prussian);color:#fff}
+  .chip.active b{color:#ffd9a0}
+  .sent.s-short{background:rgba(224,166,74,.28);border-radius:2px}
+  .sent.s-long{background:rgba(46,106,163,.22);border-radius:2px}
+  .sent.s-mid{background:rgba(0,0,0,.035)}
+  .hit{background:rgba(155,111,176,.42);box-shadow:0 0 0 1px rgba(155,111,176,.45);border-radius:2px}
+  .detox{border-radius:2px}
+  .detox-cliche{background:rgba(214,80,64,.34)}
+  .detox-neg{background:rgba(150,100,200,.30)}
+  .detox-moral{background:rgba(230,180,70,.42)}
+  .detox-triad{background:rgba(228,110,160,.32)}
+  .szum{border-radius:2px}
+  .szum-n{background:rgba(120,132,150,.40)}
+  .viewbadge{display:none}
+  .viewbadge.show{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:8px 12px;background:rgba(46,106,163,.10);border:1px solid rgba(46,106,163,.32);border-radius:8px}
+  .viewbadge .vtext{font-size:12.5px;color:var(--prussian)}
+  .vbtn{background:var(--prussian);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .vbtn:hover{filter:brightness(1.08)}
+  .modal{position:fixed;inset:0;background:rgba(8,12,17,.6);display:none;align-items:flex-start;justify-content:center;z-index:60;padding:38px 16px;overflow-y:auto}
+  .modal.show{display:flex}
+  .modal-card{background:var(--desk-2);color:var(--chrome);border:1px solid var(--hair);border-radius:14px;max-width:780px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;border-bottom:1px solid var(--hair);position:sticky;top:0;background:var(--desk-2);border-radius:14px 14px 0 0}
+  .modal-head h2{margin:0;font-size:18px;font-weight:600;color:var(--txt-strong)}
+  .modal-x{background:transparent;border:1px solid var(--hair);color:var(--txt);border-radius:8px;width:32px;height:32px;font-size:17px;cursor:pointer;line-height:1}
+  .modal-x:hover{border-color:var(--prussian)}
+  .modal-body{padding:18px 24px 26px}
+  .modal-body h3{font-size:13.5px;letter-spacing:.02em;color:var(--prussian-2);margin:22px 0 6px}
+  .modal-body h3:first-child{margin-top:0}
+  .modal-body p{margin:0 0 9px;font-size:13.5px;line-height:1.65;color:var(--txt);text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+  .modal-body ol{margin:0 0 9px;padding-left:20px}
+  .modal-body li{font-size:13.5px;line-height:1.6;color:var(--txt);margin-bottom:4px;text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+  .modal-body b{color:#eaf2fb;font-weight:600}
+  html.light .modal-body b{color:var(--txt-strong)}
+  .modal-body a{color:var(--prussian-2);text-decoration:none}
+  .modal-body a:hover{text-decoration:underline}
+  .modal-body .note{font-size:12.5px;color:var(--muted);border-left:2px solid var(--hair);padding-left:11px;margin:6px 0 9px}
+  .railfoot{margin-top:24px;border-top:1px solid var(--hair);padding-top:14px;font-size:12px;color:var(--muted);line-height:1.5}
+  .railfoot a{color:var(--prussian-2);text-decoration:none}
+  .railfoot a:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script>try{if(localStorage.getItem('akapitly_theme')==='light')document.documentElement.classList.add('light');}catch(e){}</script>
+</head>
+<body>
+<div id="mobileGate">
+  <div class="mg-card">
+    <div class="mg-logo">Akapitly</div>
+    <h2 data-en="Best on a computer">Najlepiej na komputerze</h2>
+    <p id="mgP1">Akapitly to edytor maszynopisu, pomyślany do pracy na większym ekranie z klawiaturą. Na telefonie i tablecie strona <b>działa poprawnie</b>, ale pisanie będzie niewygodne.</p>
+    <p class="mg-sub" id="mgP2">Aby skorzystać w pełni, otwórz <b>akapitly.pl</b> na laptopie lub komputerze.</p>
+    <button class="ghost" id="mobileGateBtn" data-en="Open anyway">Otwórz mimo to</button>
+  </div>
+</div>
+<header class="bar">
+  <h1><span class="dot"></span>Akapitly</h1>
+  <span class="tag" data-en="Free publishing-grade formatting, rhythm control and analytical text editing">Bezpłatne formatowanie wydawnicze, kontrola rytmu i analityczna edycja tekstu</span>
+  <span class="spacer"></span>
+  <button class="ghost" id="themeBtn" title="Przełącz jasny / ciemny motyw" data-en-title="Toggle light / dark theme">Jasny</button>
+  <button class="ghost" id="poradnikBtn" title="Poradnik dla pisarzy — artykuły" data-en="Guide" data-en-title="Writing guide — articles">Poradnik</button>
+  <button class="ghost" id="helpBtn" title="Jak pracować z programem" data-en="Help" data-en-title="How to use the app">Pomoc</button>
+  <button class="ghost" id="infoBtn" title="Prywatność, zasady, reguły i Detoks AI" data-en="Info" data-en-title="Privacy, rules, and AI Detox">Info</button>
+  <button class="ghost" id="contactBtn" title="Napisz do nas" data-en="Contact" data-en-title="Get in touch">Kontakt</button>
+  <span class="saved" id="savedmark"></span>
+</header>
+
+<main>
+  <section class="rail">
+    <label class="field" for="src" data-en="Text">Tekst</label>
+    <textarea id="src" placeholder="Wklej tutaj tekst.
+
+Twój tekst nie jest nigdzie kopiowany ani wysyłany — wszystko zostaje na Twoim komputerze.
+
+Bardzo długi tekst (orientacyjnie powyżej ~500 tys. znaków ze spacjami) może spowolnić działanie — wtedy lepiej podzielić go na rozdziały." data-en-ph="Paste your text here.
+
+Your text is never copied or sent anywhere — everything stays on your computer.
+
+Very long text (roughly over ~500k characters with spaces) may slow things down — it's then better to split it into chapters."></textarea>
+
+    <div class="row"><input type="text" id="title" placeholder="Numer/tytuł rozdziału (opcjonalnie)" data-en-ph="Chapter number/title (optional)"></div>
+
+    <label class="check">
+      <input type="checkbox" id="hasHeader" checked>
+      <span data-en="First line is the chapter heading — centered, italic">Pierwsza linia to nagłówek rozdziału — wyśrodkowany, kursywą</span>
+    </label>
+
+    <div class="btns">
+      <button class="primary" id="format" data-en="Format">Formatuj</button>
+      <button class="ghost" id="loadtxt" data-en="Load file">Wczytaj plik</button>
+      <button class="danger" id="clear" data-en="Clear">Wyczyść</button>
+      <input type="file" id="file" accept=".txt,.md,.docx,.pdf,text/plain" hidden>
+    </div>
+    <p class="hint" id="hintLoad">Plik: .txt, .md, .docx oraz (eksperymentalnie) .pdf. Stary .doc zapisz wcześniej jako .docx. „Formatuj” odświeża podgląd.</p>
+
+    <div class="chapters">
+      <div class="head"><span class="field" data-en="Chapters">Rozdziały</span></div>
+      <ul class="clist" id="clist"></ul>
+      <button class="addch" id="addch" data-en="+ New chapter">+ Nowy rozdział</button>
+      <div class="backup">
+        <button class="ghost mini" id="exportProj" title="Zapisz cały projekt do pliku (kopia zapasowa)" data-en="⤓ Save project" data-en-title="Save the whole project to a file (backup)">⤓ Zapisz projekt</button>
+        <button class="ghost mini" id="importProj" title="Wczytaj projekt z pliku .json" data-en="⤒ Load project" data-en-title="Load a project from a .json file">⤒ Wczytaj projekt</button>
+        <input type="file" id="projfile" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <!-- format dokumentu -->
+    <details class="panel" id="fmtpanel" open>
+      <summary data-en="Document format">Format dokumentu</summary>
+      <div class="seg">
+        <button class="ghost on" id="pfManu" data-en="Manuscript">Manuskrypt</button>
+        <button class="ghost" id="pfBook" data-en="Print book">Książka do druku</button>
+        <button class="ghost" id="pfEbook" data-en="e-Book">e-Book</button>
+      </div>
+      <div id="variantRow" style="display:none;margin-top:8px">
+        <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:.04em">English variant</label>
+        <div class="seg">
+          <button class="ghost on" id="vUS" title="US: double quotes, em-dash">US</button>
+          <button class="ghost" id="vUK" title="UK: single quotes, spaced en-dash">UK</button>
+        </div>
+      </div>
+      <p class="hint" id="fmtHint" style="margin-top:6px">Profil ustawia rozsądny punkt wyjścia — każdą wartość możesz potem zmienić. Czcionka pozostaje Times New Roman.</p>
+      <p class="hint" id="ebookNote" style="display:none;margin-top:6px">Profil <b>e-Book</b>: <b>Pobierz EPUB</b> tworzy gotowy plik <b>.epub</b> (EPUB 3, ze spisem treści i podziałem rozdziałów), a <b>Pobierz e-book</b> — elastyczny <b>.html</b> do konwersji w Calibre. Tytuły rozdziałów trafiają do <b>&lt;h1&gt;</b>, twarde spacje wracają do zwykłych. Ustawienia geometrii strony poniżej nie mają wtedy znaczenia.</p>
+      <p class="hint" id="bookNote" style="display:none;margin-top:6px">Profil <b>Książka do druku</b>: eksport DOCX z <b>marginesami lustrzanymi</b> (oprawa +0,5 cm po wewnętrznej), <b>dzieleniem wyrazów</b> (PL) i kontrolą <b>wdów/bękartów</b>. Numerów stron Akapitly nie wstawia — dodaj je w swoim edytorze (Word/Google Docs: <b>Wstaw → Numery stron</b>). Ręczna zmiana marginesów/czcionki przełącza profil na „własny" i wyłącza te reguły.</p>
+      <div class="fgrid">
+        <div class="full">
+          <label for="selPage" data-en="Page size">Rozmiar strony</label>
+          <select id="selPage">
+            <option value="210x297">A4 (210 × 297 mm)</option>
+            <option value="215.9x279.4">US Letter (8.5 × 11")</option>
+            <option value="148x210">A5 (148 × 210 mm)</option>
+            <option value="135x205" data-en="135 × 205 mm (novel)">135 × 205 mm (powieściowy)</option>
+            <option value="152.4x228.6">6 × 9" (US trade)</option>
+            <option value="139.7x215.9">5.5 × 8.5" (US)</option>
+            <option value="129x198">B-format (129 × 198 mm)</option>
+            <option value="138x216">Demy (138 × 216 mm)</option>
+          </select>
+        </div>
+        <div><label for="inFont" data-en="Font size (pt)">Wielkość czcionki (pt)</label><input type="number" id="inFont" min="8" max="18" step="0.5"></div>
+        <div>
+          <label for="selLine" data-en="Line spacing">Interlinia</label>
+          <select id="selLine">
+            <option value="1" data-en="1.0">1,0</option>
+            <option value="1.15" data-en="1.15">1,15</option>
+            <option value="1.5" data-en="1.5">1,5</option>
+            <option value="2" data-en="2.0">2,0</option>
+          </select>
+        </div>
+        <div><label for="inIndent" data-en="Paragraph indent (cm)">Wcięcie akapitu (cm)</label><input type="number" id="inIndent" min="0" max="3" step="0.05"></div>
+        <div><label for="inMT" data-en="Top margin (cm)">Margines górny (cm)</label><input type="number" id="inMT" min="0" max="6" step="0.1"></div>
+        <div><label for="inMB" data-en="Bottom margin (cm)">Margines dolny (cm)</label><input type="number" id="inMB" min="0" max="6" step="0.1"></div>
+        <div><label for="inML" data-en="Left margin (cm)">Margines lewy (cm)</label><input type="number" id="inML" min="0" max="6" step="0.1"></div>
+        <div><label for="inMR" data-en="Right margin (cm)">Margines prawy (cm)</label><input type="number" id="inMR" min="0" max="6" step="0.1"></div>
+      </div>
+    </details>
+
+    <details class="panel" id="subpanel">
+      <summary data-en="Title page & submission">Strona tytułowa i wysyłka</summary>
+      <p class="hint" style="margin-top:6px" data-en="Applies to the “Download all” export. A title page and running head (surname / title / page number) are standard when submitting a manuscript to an agent or publisher.">Dotyczy eksportu „Pobierz całość”. Strona tytułowa i żywa pagina (nazwisko / tytuł / numer strony) to standard przy składaniu manuskryptu do agenta lub wydawcy.</p>
+      <div class="fgrid">
+        <div class="full"><label for="inAuthor" data-en="Author">Autor</label><input type="text" id="inAuthor" placeholder="Imię i nazwisko" data-en-ph="Full name"></div>
+        <div class="full"><label for="inMsTitle" data-en="Manuscript title">Tytuł manuskryptu</label><input type="text" id="inMsTitle" placeholder="Tytuł całości" data-en-ph="Whole title"></div>
+        <div class="full"><label for="inContact" data-en="Contact (optional, one per line)">Kontakt (opcjonalnie, każda linia osobno)</label><textarea id="inContact" style="min-height:70px" placeholder="adres e-mail&#10;telefon&#10;agent" data-en-ph="email address&#10;telephone&#10;agent"></textarea></div>
+      </div>
+      <label class="check"><input type="checkbox" id="ckTitlePage"><span data-en="Add a title page at the start">Dodaj stronę tytułową na początku całości</span></label>
+      <label class="check"><input type="checkbox" id="ckHeader"><span data-en="Running head: surname / title in the header">Żywa pagina: nazwisko / tytuł w nagłówku</span></label>
+      <div class="fgrid"><div class="full"><label for="selPageNum" data-en="Page numbers">Numery stron</label>
+        <select id="selPageNum">
+          <option value="from1" data-en="from page 1">od 1. strony</option>
+          <option value="from2" data-en="from page 2">od 2. strony</option>
+          <option value="none" data-en="no numbers">bez numerów</option>
+        </select></div></div>
+    </details>
+
+    <details class="panel" id="freqpanel">
+      <summary data-en="Repetition &amp; word frequency">Powtórzenia i częstość słów</summary>
+      <p class="hint" style="margin-top:6px" data-en="Analysis of the active chapter: the most frequent words and echoes (the same word close together). Inflections are grouped approximately.">Analiza aktywnego rozdziału: najczęstsze słowa i echa (to samo słowo blisko siebie). Grupuje odmiany w przybliżeniu.</p>
+      <button class="ghost" id="freqBtn" style="margin-top:10px;width:100%" data-en="Analyse repetition">Analizuj powtórzenia</button>
+      <div id="freqbox" style="margin-top:12px"></div>
+    </details>
+
+    <details class="panel" id="statspanel">
+      <summary data-en="Statistics">Statystyki</summary>
+      <div class="freqh" style="margin-top:8px" data-en="Active chapter">Aktywny rozdział</div>
+      <div class="basic" id="basic">
+        <div class="brow"><span data-en="Words">Słowa</span><b id="b-words">0</b></div>
+        <div class="brow"><span data-en="Characters (no spaces)">Znaki (bez spacji)</span><b id="b-chars">0</b></div>
+        <div class="brow"><span data-en="Characters (with spaces)">Znaki ze spacjami</span><b id="b-charss">0</b></div>
+      </div>
+      <div class="freqh" style="margin-top:14px" data-en="Whole project">Cały projekt</div>
+      <div class="basic">
+        <div class="brow"><span data-en="Chapters">Rozdziały</span><b id="sb-ch">0</b></div>
+        <div class="brow"><span data-en="Total words">Słowa łącznie</span><b id="sb-words">0</b></div>
+        <div class="brow"><span data-en="Characters (with spaces)">Znaki ze spacjami</span><b id="sb-charss">0</b></div>
+        <div class="brow"><span data-en="Standard pages">Strony znormalizowane</span><b id="sb-pages">0</b></div>
+        <div class="brow"><span data-en="Estimated reading time">Szacowany czas czytania</span><b id="sb-read">—</b></div>
+      </div>
+      <p class="hint" style="margin-top:10px" data-en="“Active chapter” is counted from the “Text” field. Pages use the standard page (1800 characters with spaces); reading time at ~200 words per minute.">„Aktywny rozdział” liczony z pola „Tekst”. Strony jak strona znormalizowana (1800 znaków ze spacjami); czas czytania przy ~200 słowach na minutę.</p>
+    </details>
+
+    <div class="stats" id="stats">
+      <h4 data-en="Rhythm analysis">Analiza rytmu</h4>
+      <div class="stat"><span data-en="Total paragraphs">Akapity łącznie</span><b id="s-total">—</b></div>
+      <div class="stat"><span data-en="Dialogue / narrative">Dialog / narracja</span><b id="s-split">—</b></div>
+      <div class="stat"><span data-en="Avg narrative paragraph">Śr. akapit narracyjny</span><b id="s-avg">—</b></div>
+      <div class="stat"><span data-en="Short narrative (≤12 w.)">Krótkie narracyjne (≤12 sł.)</span><b id="s-short">—</b></div>
+      <div class="stat"><span data-en="Choppy runs (≥3 in a row)">Ciągi posiekane (≥3 z rzędu)</span><b id="s-run">—</b></div>
+      <div class="stat"><span data-en="Longest paragraph">Najdłuższy akapit</span><b id="s-long">—</b></div>
+      <div class="stat"><span data-en="1-sentence narrative">Narracyjne 1-zdaniowe</span><b id="s-1s">—</b></div>
+      <div class="stat"><span data-en="2-sentence narrative">Narracyjne 2-zdaniowe</span><b id="s-2s">—</b></div>
+      <div class="spark"><div class="sparkhead" data-en="Sentence length (in order)">Długość zdań (kolejno)</div><div id="sparkbox"></div></div>
+      <div class="legend">
+        <div class="cap" data-en="Mode “Paragraph length”">Tryb „Długość akapitów”</div>
+        <div><span class="sw" style="background:var(--warn)"></span><span data-en="short narrative paragraph">krótki akapit narracyjny</span></div>
+        <div><span class="sw" style="background:var(--danger)"></span><span data-en="choppy run — check whether it is one action">ciąg posiekany — sprawdź, czy to jedna czynność</span></div>
+        <div><span class="sw" style="background:var(--prussian)"></span><span data-en="long paragraph — consider splitting">długi akapit — można rozważyć podział</span></div>
+        <div class="cap" data-en="Mode “Sentences per paragraph”">Tryb „Ilość zdań w akapitach”</div>
+        <div><span class="sw" style="background:var(--violet)"></span><span data-en="1-sentence paragraph">akapit 1-zdaniowy</span></div>
+        <div><span class="sw" style="background:var(--violet-2)"></span><span data-en="2-sentence paragraph">akapit 2-zdaniowy</span></div>
+        <div class="cap" data-en="Mode “Sentence length”">Tryb „Długość zdań”</div>
+        <div><span class="sw" style="background:var(--warn)"></span><span data-en="short sentence (≤7 w.)">krótkie zdanie (≤7 sł.)</span></div>
+        <div><span class="sw" style="background:var(--prussian)"></span><span data-en="long sentence (≥30 w.)">długie zdanie (≥30 sł.)</span></div>
+        <div class="cap" data-en="Mode “AI Detox”">Tryb „Detoks AI”</div>
+        <div><span class="sw" style="background:rgba(214,80,64,.6)"></span><span data-en="AI clichés and buzzwords">klisze i buzzwordy AI</span></div>
+        <div><span class="sw" style="background:rgba(150,100,200,.6)"></span><span data-en="negation contrast (“not…, but/rather”)">kontrast przez zaprzeczenie („nie…, lecz/ale/tylko”)</span></div>
+        <div><span class="sw" style="background:rgba(230,180,70,.75)"></span><span data-en="moralizing paragraph ending">moralizatorska końcówka akapitu</span></div>
+        <div><span class="sw" style="background:rgba(228,110,160,.6)"></span><span data-en="triads (X, Y, and Z)">triady i duety przymiotnikowe</span></div>
+        <div class="cap" data-en="Mode “Noise meter”">Tryb „Wskaźnik szumu”</div>
+        <div><span class="sw" style="background:rgba(120,132,150,.75)"></span><span data-en="filler words (that, which, very, just…) and the weak verb “to be”">wyrazy-wytrychy (że, który, bardzo, właśnie…) i słaby czasownik „być”</span></div>
+        <div class="sub" id="legendSub">Detoks AI i Wskaźnik szumu wskazują <b>kandydatów do sprawdzenia, nie błędy</b> — wykrywają wzorce mechanicznie, bez rozumienia treści, więc bywają fałszywe trafienia. Wskaźnik szumu pokazuje też <b>% słów</b> uznanych za szum. Pełny opis reguł: zakładka <b>Info</b>. „Długość zdań”, „Detoks AI”, „Wskaźnik szumu” i podświetlanie słów możesz edytować na bieżąco; „Wyłącz podświetlenie” je zdejmie.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="pagewrap" id="pagewrap">
+      <div class="toolbar">
+        <span class="lbl" data-en="Analysis">Analiza</span>
+        <button class="ghost active" id="modeLen" title="Podświetla rytm wg długości akapitów" data-en="Paragraph length" data-en-title="Highlights rhythm by paragraph length">Długość akapitów</button>
+        <button class="ghost" id="modeSent" title="Podświetla akapity 1- i 2-zdaniowe" data-en="Sentences per paragraph" data-en-title="Highlights 1- and 2-sentence paragraphs">Ilość zdań w akapitach</button>
+        <button class="ghost" id="modeSentLen" title="Podświetla pojedyncze zdania wg długości (podgląd tylko do odczytu)" data-en="Sentence length" data-en-title="Highlights individual sentences by length (read-only preview)">Długość zdań</button>
+        <button class="ghost" id="modeDetoks" title="Wykrywa typowe ślady stylu AI — kandydaci do sprawdzenia, nie błędy" data-en="AI Detox" data-en-title="Detects common AI-style tells — candidates to check, not errors">Detoks AI</button>
+        <button class="ghost" id="modeSzum" title="Podświetla wyrazy-wytrychy i słaby „być”; pokazuje % szumu" data-en="Noise meter" data-en-title="Highlights filler words and the weak verb “to be”; shows % noise">Wskaźnik szumu</button>
+        <span class="spacer"></span>
+        <span class="filename" id="fname"></span>
+        <button class="ghost" id="dl1" disabled>Pobierz rozdział</button>
+        <button class="primary" id="dlall" disabled>Pobierz całość</button>
+        <button class="ghost" id="dlepub" style="display:none" data-en="Download EPUB">Pobierz EPUB</button>
+      </div>
+      <div class="viewbadge" id="viewbadge">
+        <span class="vtext"></span>
+        <button class="vbtn" id="viewClear" data-en="Turn off highlighting">Wyłącz podświetlenie</button>
+      </div>
+      <div class="page" id="page" contenteditable="false" spellcheck="false">
+        <p class="empty">Wklej tekst po lewej albo wczytaj plik, potem kliknij „Formatuj”. Format — Manuskrypt, Książka do druku lub e-Book — wybierzesz w panelu „Format dokumentu”.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-label="Pomoc">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 data-en="How to use Akapitly">Jak pracować z Akapitly</h2>
+      <button class="modal-x" id="helpClose" title="Zamknij" aria-label="Zamknij" data-en-title="Close">×</button>
+    </div>
+    <div class="modal-body" id="helpBody">
+      <h3>W skrócie</h3>
+      <ol>
+        <li>Wklej tekst w pole po lewej (albo <b>Wczytaj plik</b>: .txt, .md, .docx, .pdf).</li>
+        <li>Kliknij <b>Formatuj</b> — program zastosuje polskie reguły manuskryptu.</li>
+        <li>Przejrzyj <b>analizę rytmu</b> i <b>powtórzenia</b> po prawej i w panelach.</li>
+        <li>Uzupełnij <b>stronę tytułową i wysyłkę</b>, jeśli składasz całość.</li>
+        <li>Kliknij <b>Pobierz całość</b> (lub pojedynczy rozdział).</li>
+      </ol>
+
+      <h3>Rozdziały</h3>
+      <p>Lewa kolumna to lista rozdziałów. <b>+ Rozdział</b> dodaje nowy, kliknięcie przełącza między nimi. Każdy rozdział ma własny tytuł; opcja „rozpoczyna nowy nagłówek” wstawia nazwę rozdziału na początku. Tekst zapisuje się automatycznie w tej przeglądarce.</p>
+
+      <h3>Wklejanie i import</h3>
+      <p>Najprościej: wklej tekst do pola po lewej. <b>Wczytaj plik</b> obsługuje .txt, .md, .docx i .pdf — treść trafi do aktywnego rozdziału. Import .docx/.pdf korzysta z bibliotek pobieranych z sieci, więc działa tylko online.</p>
+
+      <h3>Formatowanie i profile</h3>
+      <p><b>Formatuj</b> stosuje standard polskiego manuskryptu: dialogi od półpauzy (–), poprawne cudzysłowy „ ” (z kropką i przecinkiem po cudzysłowie), korektę didaskaliów, twarde spacje po jednoliterowych spójnikach, wcięcia akapitów, pierwszy akapit bez wcięcia, odstęp scen <b>* * *</b>. Wybierz profil <b>Manuskrypt</b> (A4, do agenta/wydawcy), <b>Książka do druku</b> (A5) lub <b>e-Book</b> (elastyczny HTML); w razie potrzeby zmień czcionkę, interlinię i marginesy.</p>
+
+      <h3>Analiza rytmu</h3>
+      <p>Trzy tryby podświetlania nad tekstem:</p>
+      <ol>
+        <li><b>Długość akapitów</b> — wyróżnia krótkie, posiekane ciągi i bardzo długie akapity.</li>
+        <li><b>Ilość zdań w akapitach</b> — pokazuje akapity 1- i 2-zdaniowe.</li>
+        <li><b>Długość zdań</b> — koloruje pojedyncze zdania (krótkie / długie). W tym trybie możesz <b>edytować dalej</b> — podświetlenie odświeży się po chwili, kursor zostaje na miejscu.</li>
+      </ol>
+      <p>Z boku jest też wykres długości kolejnych zdań. <span class="note">To pomiar mechaniczny (długość i liczba zdań), nie ocena treści — krótki czy 1-zdaniowy akapit bywa świadomym uderzeniem.</span></p>
+
+      <h3>Detoks AI</h3>
+      <p>Obok trybów rytmu jest tryb <b>Detoks AI</b> — podświetla typowe ślady „maszynowego” stylu: nadużywane słowa i buzzwordy, opisy przez zaprzeczenie („nie…, lecz/ale/tylko”), moralizatorskie końcówki akapitów oraz symetryczne triady i duety. Włączasz go przyciskiem <b>Detoks AI</b> nad tekstem; podświetlenia odświeżają się na bieżąco, możesz przy nich pisać, a przyciskiem <b>Wyłącz podświetlenie</b> je zdejmiesz. <span class="note">To <b>kandydaci do sprawdzenia, nie błędy</b> — działa na wzorcach, bez wysyłania tekstu do żadnej AI. Pełny opis reguł i ograniczeń znajdziesz w <a href="#" id="helpToInfo">zakładce Info</a>.</span></p>
+      <p>Obok jest <b>Wskaźnik szumu</b> — podświetla wyrazy-wytrychy (że, który, bardzo, właśnie) i słaby czasownik „być”, a na górze pokazuje <b>% słów</b> uznanych za szum. Też na wzorcach, też <b>kandydaci, nie błędy</b> (szczegóły w Info).</p>
+
+      <h3>Powtórzenia i częstość słów</h3>
+      <p>Panel <b>Powtórzenia i częstość słów</b> → <b>Analizuj powtórzenia</b>: pokazuje najczęstsze słowa (grupuje odmiany, np. ręka/rękę/ręką), echa — to samo słowo blisko siebie — oraz <b>początki zdań</b>, czyli słowa, od których zaczyna się wiele zdań (typowy zgrzyt: „I…”, „Potem…”, „On…”). <b>Kliknij</b> słowo lub echo, aby podświetlić wszystkie jego wystąpienia; kliknięcie początku zdania podświetla <b>tylko pierwsze słowo</b> pasujących zdań. Grupowanie odmian jest przybliżone.</p>
+
+      <h3>Strona tytułowa, żywa pagina, numery stron</h3>
+      <p>Panel <b>Strona tytułowa i wysyłka</b> (dotyczy „Pobierz całość”): wpisz autora, tytuł i kontakt. Możesz włączyć stronę tytułową, żywą paginę (nazwisko / tytuł w nagłówku) oraz wybrać <b>numery stron</b>: od 1. strony, od 2. strony lub bez. <span class="note">Numery z importu .docx pokazują się w Wordzie/LibreOffice; Google Docs może ich nie wyświetlić — wtedy dodaj je przez Wstaw → Numery stron.</span></p>
+
+      <h3>Eksport</h3>
+      <p><b>Pobierz rozdział</b> zapisuje bieżący rozdział, <b>Pobierz całość</b> — wszystkie razem, jako plik <b>.docx</b> (gdy jesteś offline, zapisze się RTF, który Word też otworzy). <span class="note">Podgląd w Akapitly to ciągły widok i celowo <b>nie dzieli tekstu na strony</b> — to normalne. Podział na strony robi dopiero docelowy program (Word, LibreOffice, Google Docs, czytnik) po eksporcie i tam dokument wygląda poprawnie.</span></p>
+      <p>W profilu <b>e-Book</b> przycisk <b>Pobierz EPUB</b> zapisuje gotowy plik <b>.epub</b> (EPUB 3 z interaktywnym spisem treści, podziałem rozdziałów i spisem NCX dla starszych czytników). Przyciski <b>Pobierz rozdział / e-book</b> tworzą zamiast tego elastyczny plik <b>.html</b> gotowy do konwersji w <b>Calibre</b>: tytuły rozdziałów w &lt;h1&gt;, automatyczny spis treści z odnośnikami, podział ekranów przed każdym rozdziałem, twarde spacje zamienione z powrotem na zwykłe (żeby tekst dobrze się skalował na czytnikach). <span class="note">EPUB warto przed wysyłką sprawdzić w czytniku lub w Calibre.</span></p>
+      <p>W profilu <b>Książka do druku</b> eksport DOCX dodaje reguły składu: marginesy lustrzane (oprawa +0,5 cm po wewnętrznej), dzielenie wyrazów (PL) i kontrolę wdów/bękartów. <span class="note"><b>Numeracja stron nie wchodzi w zakres</b> — dodaj numery samodzielnie w swoim edytorze (Word/Google Docs: <b>Wstaw → Numery stron</b>) albo na etapie PDF. Edytory różnie obsługują numery z importu .docx, więc pewniej zrobić to na miejscu. EPUB dla e-Booka jest już dostępny (przycisk <b>Pobierz EPUB</b> w profilu e-Book).</span></p>
+
+      <h3>Kopia zapasowa i zapis</h3>
+      <p>Twoja praca jest zapisywana <b>w tej przeglądarce</b>. Pod listą rozdziałów masz <b>Zapisz projekt</b> (cały projekt do pliku .json) i <b>Wczytaj projekt</b>. <span class="note">Wyczyszczenie danych przeglądarki albo tryb prywatny oznaczają utratę zapisu — rób kopię regularnie i trzymaj plik .json u siebie.</span></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-label="Kontakt">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 data-en="Contact">Kontakt</h2>
+      <button class="modal-x" id="contactClose" title="Zamknij" aria-label="Zamknij" data-en-title="Close">×</button>
+    </div>
+    <div class="modal-body" id="contactBody">
+      <p>Masz pytanie, pomysł na usprawnienie albo chcesz zgłosić błąd? Napisz do nas — staramy się odpowiadać w ciągu <b>24 godzin</b>.</p>
+      <h3>E-mail</h3>
+      <p><a href="mailto:info@akapitly.pl">info@akapitly.pl</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-label="Info">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Info</h2>
+      <button class="modal-x" id="infoClose" title="Zamknij" aria-label="Zamknij" data-en-title="Close">×</button>
+    </div>
+    <div class="modal-body" id="infoBody">
+      <h3>Bezpieczeństwo i prywatność</h3>
+      <p>Akapitly to jeden plik działający w Twojej przeglądarce — trochę jak kalkulator: liczy i formatuje na Twoim urządzeniu. <b>Twój tekst nigdzie nie jest wysyłany.</b> Nie ma serwera, konta ani logowania; to, co piszesz, zostaje na Twoim komputerze (zapisuje się w pamięci tej przeglądarki).</p>
+      <p>Internet jest potrzebny tylko po to, by raz wczytać kilka gotowych narzędzi pomocniczych — do otwierania plików .docx i .pdf oraz do zapisu .docx i EPUB. Po pobraniu pracują one u Ciebie, lokalnie, i nie odsyłają tekstu nigdzie dalej.</p>
+      <p class="note">Wyczyszczenie danych przeglądarki albo tryb prywatny kasuje zapis — dlatego regularnie rób kopię (przycisk <b>Zapisz projekt</b>) i trzymaj plik .json u siebie.</p>
+
+      <h3>Program jest darmowy</h3>
+      <p>Akapitly jest i pozostanie <b>całkowicie darmowy</b> — bez opłat i bez limitów.</p>
+
+      <h3>Strony i numeracja</h3>
+      <p>Podgląd po prawej to jeden <b>ciągły widok</b> i celowo nie dzieli tekstu na strony — to normalne, nie błąd. Podział na strony pojawia się dopiero po eksporcie, w programie docelowym (Word, LibreOffice, Google Docs lub czytnik e-booków), i tam dokument wygląda już prawidłowo.</p>
+      <p>Numerów stron Akapitly nie wstawia. Najpewniej dodać je na miejscu — w swoim edytorze (<b>Wstaw → Numery stron</b>) albo przy tworzeniu PDF. Różne programy różnie radzą sobie z numerami przeniesionymi z pliku, więc zrobienie tego u siebie daje pewny efekt.</p>
+
+      <h3>Reguły automatyczne (przycisk „Formatuj”)</h3>
+      <p>Po kliknięciu <b>Formatuj</b> Akapitly porządkuje tekst według polskich zasad maszynopisu. Te same reguły działają w każdym profilu:</p>
+      <ul>
+        <li>dialogi i wypowiedzi od półpauzy „–” (wiodący dywiz lub pauza → półpauza);</li>
+        <li>myślnik w środku zdania jako spacjowana półpauza „ – ”;</li>
+        <li>korekta didaskaliów: kropka przed myślnikiem + czasownik mówienia → kropka znika, czasownik małą literą („– Idę. – Powiedział.” → „– Idę – powiedział.”); po „?”/„!” znak zostaje, czasownik małą literą;</li>
+        <li>polskie cudzysłowy „ ”, a kropka i przecinek przenoszone za cudzysłów zamykający;</li>
+        <li>wielokropek jako jeden znak „…”;</li>
+        <li>zakresy i łączone liczby bez spacji, z półpauzą (1939–1945);</li>
+        <li>usuwanie spacji przed . , ? ! : ; oraz redukcja podwójnych spacji;</li>
+        <li>twarde spacje po jednoliterowych spójnikach i, a, o, u, w, z (też wielkich), by nie zostawały na końcu wiersza;</li>
+        <li>pierwszy akapit bez wcięcia, odstęp scen jako * * *.</li>
+      </ul>
+
+      <h3>Czym różnią się profile</h3>
+      <p>Reguły interpunkcji są wszędzie identyczne — profile różnią się <b>układem strony i eksportem</b>:</p>
+      <ul>
+        <li><b>Manuskrypt</b> (A4) — układ do wysyłki do agenta lub wydawcy: szersza interlinia, opcjonalna strona tytułowa i żywa pagina (nazwisko / tytuł), możliwość dołączenia numerów stron w nagłówku. Eksport do .docx, każdy rozdział od nowej strony.</li>
+        <li><b>Książka do druku</b> (A5 lub format powieściowy) — układ zbliżony do gotowej książki: marginesy lustrzane z miejscem na oprawę, dzielenie wyrazów oraz kontrola wdów i bękartów. Numerów stron tu nie dodajemy (patrz wyżej). Eksport do .docx.</li>
+        <li><b>e-Book</b> — zamiast sztywnej strony powstaje elastyczny tekst dla czytników: <b>Pobierz EPUB</b> tworzy gotowy plik .epub (ze spisem treści i podziałem rozdziałów), a <b>Pobierz e-book</b> — plik .html do konwersji w Calibre. W obu twarde spacje wracają do zwykłych, by tekst dobrze się skalował; ustawienia marginesów i rozmiaru strony nie mają tu znaczenia.</li>
+      </ul>
+      <p class="note">Po eksporcie warto sprawdzić plik w programie docelowym: .docx w Wordzie/LibreOffice, a EPUB/HTML w Calibre lub czytniku.</p>
+
+      <h3>Co wykrywa Detoks AI</h3>
+      <p>Detoks AI (tryb nad podglądem) podświetla typowe ślady „maszynowego” stylu, żeby łatwiej było je wyłapać i przepisać po swojemu. Wykrywa cztery rzeczy:</p>
+      <ol>
+        <li><b>Klisze i buzzwordy AI</b> <span style="background:rgba(214,80,64,.34);border-radius:2px;padding:0 4px">jasnoczerwony</span> — nadużywane słowa i ich formy, m.in.: taniec/tańczyć, symfonia, tkanka, mozaika, labirynt, kluczowy, niesamowity, niezwykły, świadectwo, przypomnienie (np. „taniec cieni”, „mozaika wspomnień”).</li>
+        <li><b>Kontrast przez zaprzeczenie</b> <span style="background:rgba(150,100,200,.3);border-radius:2px;padding:0 4px">jasnofioletowy</span> — całe zdania opisujące coś przez to, czym nie jest: słowo „nie”, a w odległości 1–4 słów „lecz”, „ale” lub „tylko” (np. „To nie była nienawiść, lecz żal.”).</li>
+        <li><b>Moralizatorska końcówka akapitu</b> <span style="background:rgba(230,180,70,.42);border-radius:2px;padding:0 4px">jasnożółty</span> — ostatnie zdanie akapitu zaczynające się od wymuszonego podsumowania: „W końcu…”, „Ostatecznie…”, „To przypomnienie, że…”, „Przypominało to o…”, „To nie tylko…”.</li>
+        <li><b>Triady i duety</b> <span style="background:rgba(228,110,160,.32);border-radius:2px;padding:0 4px">jasnoróżowy</span> — symetryczne wyliczenia usypiające rytm: trzy człony „X, Y i Z” (np. „zmęczony, sfrustrowany i zagubiony”) oraz dwa przymiotniki złączone „i” przed rzeczownikiem (np. „głęboki i przejmujący smutek”).</li>
+      </ol>
+      <p>Podświetlenia odświeżają się na bieżąco podczas pisania.</p>
+
+      <h3>Ograniczenia Detoks AI</h3>
+      <p>Detoks AI celowo <b>nie korzysta z żadnego modelu AI</b>. Dzięki temu program jest darmowy, a Twój tekst nigdy nie opuszcza komputera — nic nie trafia do zewnętrznej sztucznej inteligencji. W zamian działa na <b>wzorcach</b> (dopasowaniach tekstu), a nie na rozumieniu treści. To znaczy, że:</p>
+      <ul>
+        <li>pokazuje <b>kandydatów do sprawdzenia, nie błędy</b> — decyzja zawsze należy do Ciebie;</li>
+        <li>zdarzają się fałszywe trafienia (np. naturalne „nie wiem, ale…”, zwykłe użycie słowa „kluczowy”);</li>
+        <li>reguła <b>triad i duetów</b> jest najmniej dokładna: rozpoznaje układ wyrazów, ale nie część mowy, więc czasem podświetli zwykłe wyliczenie („Jan, Piotr i Anna”) lub parę rzeczowników. Traktuj te miejsca jako sygnał „zatrzymaj się i spójrz”, nie jako wyrok.</li>
+      </ul>
+
+      <h3>Wskaźnik szumu</h3>
+      <p>Osobny tryb (obok Detoks AI), który podświetla — jednym kolorem <span style="background:rgba(120,132,150,.4);border-radius:2px;padding:0 4px">szarym</span> — słowa rozrzedzające prozę i pokazuje na górze <b>% słów</b> uznanych za szum (im niżej, tym gęstszy tekst). Obejmuje dwie rzeczy:</p>
+      <ol>
+        <li><b>Wyrazy-wytrychy</b> — „że”, „który” (i odmiany), „bardzo”, „właśnie”, „naprawdę”, „po prostu”, „w sumie”.</li>
+        <li><b>Słaby czasownik „być”</b> — formy: jest, są, był, była, było, będzie… Częste „być” zwykle da się zastąpić mocniejszym czasownikiem.</li>
+      </ol>
+      <p class="note">To samo zastrzeżenie co przy Detoks AI: <b>kandydaci, nie błędy</b>, bez modelu AI i bez wysyłania tekstu. „że” i „być” są bardzo częste, więc trafień bywa dużo — chodzi o zwrócenie uwagi, nie o usunięcie wszystkiego.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-label="Potwierdzenie">
+  <div class="modal-card" style="max-width:440px">
+    <div class="modal-head"><h2 id="confirmTitle" data-en="Confirm">Potwierdzenie</h2></div>
+    <div class="modal-body">
+      <p id="confirmMsg" style="margin-bottom:20px"></p>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="ghost" id="confirmCancel" data-en="Cancel">Anuluj</button>
+        <button class="primary" id="confirmOk" data-en="OK">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- biblioteki (ładowane w przeglądarce użytkownika) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+"use strict";
+const NBSP = "\u00A0";
+const STORE_KEY = "maszynopis_v3";
+const AN_SHORT = 12, AN_RUN = 3, AN_LONG = 110;
+const AN_S_SHORT = 7, AN_S_LONG = 30;   // progi długości ZDAŃ (słowa)
+
+let analysisMode = "paralen";   // "paralen" | "parasent" | "sentlen" | "detoks" | "off"
+let findStem = null;            // aktywny rdzeń do podświetlenia słów (lub null)
+let findOpening = null;         // aktywny początek zdania do podświetlenia (lub null)
+let openLabel = "";
+let findLabel = "";
+
+const PRESETS = {
+  maszynopis: { pageW:210, pageH:297, margTop:2.54, margRight:2.54, margBottom:2.54, margLeft:2.54, fontPt:12, lineSpacing:1.5,  indentCm:1.25 },
+  ksiazka:    { pageW:148, pageH:210, margTop:2.0,  margRight:2.0,  margBottom:2.0,  margLeft:2.0,  fontPt:11, lineSpacing:1.15, indentCm:0.5 },
+  ebook:      { pageW:148, pageH:210, margTop:2.0,  margRight:2.0,  margBottom:2.0,  margLeft:2.0,  fontPt:12, lineSpacing:1.5,  indentCm:0.5 }
+};
+function defaultSettings(){ return Object.assign({profile:"maszynopis", author:"", manuscriptTitle:"", contact:"", titlePage:false, runningHeader:false, pageNum:"from1"}, PRESETS.maszynopis); }
+function enPresets(){
+  const uk = (typeof VARIANT !== "undefined" && VARIANT === "uk");
+  return {
+    maszynopis: { pageW: uk?210:215.9, pageH: uk?297:279.4, margTop:2.54, margRight:2.54, margBottom:2.54, margLeft:2.54, fontPt:12, lineSpacing:2.0,  indentCm:1.27 },
+    ksiazka:    { pageW: uk?129:152.4, pageH: uk?198:228.6, margTop:1.9,  margRight:1.9,  margBottom:1.9,  margLeft:1.9,  fontPt:11, lineSpacing:1.15, indentCm:0.6 },
+    ebook:      { pageW:148, pageH:210, margTop:2.0, margRight:2.0, margBottom:2.0, margLeft:2.0, fontPt:12, lineSpacing:1.5, indentCm:0.5 }
+  };
+}
+
+let project = { chapters: [], activeId: null, settings: defaultSettings() };
+
+function uid(){ return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function activeChapter(){ return project.chapters.find(c=>c.id===project.activeId) || null; }
+
+/* ===================== STAN / PROJEKT ===================== */
+let PROJECT_FRESH = false;
+function loadProject(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    PROJECT_FRESH = !raw;
+    if(raw){ const p = JSON.parse(raw); if(p && Array.isArray(p.chapters)) project = p; }
+  }catch(e){}
+  if(!project.settings) project.settings = defaultSettings();
+  { const sd = defaultSettings(); for(const k in sd){ if(project.settings[k] === undefined) project.settings[k] = sd[k]; } }
+  if(!project.chapters.length){
+    const c = { id:uid(), title:"", text:"", html:"", hasHeader:true };
+    project.chapters.push(c); project.activeId = c.id;
+  }
+  if(!activeChapter()) project.activeId = project.chapters[0].id;
+}
+let saveT;
+let lastSavedAt = null;
+function pad2(n){ return String(n).padStart(2,"0"); }
+function paintSavedMark(){
+  const m = document.getElementById("savedmark"); if(!m) return;
+  if(!lastSavedAt){ m.textContent = ""; return; }
+  m.textContent = t("savedAt") + " " + pad2(lastSavedAt.getHours()) + ":" + pad2(lastSavedAt.getMinutes());
+}
+function writeStore(){
+  lastSavedAt = new Date(); project.savedAt = lastSavedAt.toISOString();
+  localStorage.setItem(STORE_KEY, JSON.stringify(project));
+  paintSavedMark();
+}
+function saveProject(){
+  clearTimeout(saveT);
+  saveT = setTimeout(()=>{ try{ writeStore(); }catch(e){} }, 350);
+}
+function saveNow(){
+  try{
+    writeStore();
+    const m = document.getElementById("savedmark");
+    if(m){ m.innerHTML = t("savedTick") + m.textContent; clearTimeout(saveNow._t); saveNow._t = setTimeout(paintSavedMark, 1600); }
+    toast(t("tSaved"));
+  }catch(e){ toast(t("tSaveErr")); }
+}
+
+/* ===================== TYPOGRAFIA ===================== */
+// Czasowniki mówienia (didaskalia). Lista przybliżona — rozszerzalna.
+const SPEECH_VERBS_SRC = ([
+  "powiedział","powiedziała","powiedzieli","powiedziały",
+  "rzekł","rzekła","rzekli","rzekły","odrzekł","odrzekła",
+  "odparł","odparła","odparli","odparły",
+  "odpowiedział","odpowiedziała","odpowiedzieli","odpowiedziały",
+  "zapytał","zapytała","zapytali","zapytały","spytał","spytała","spytali","spytały",
+  "mruknął","mruknęła","mruknęli","mruknęły","burknął","burknęła",
+  "szepnął","szepnęła","szepnęli","szepnęły","wyszeptał","wyszeptała",
+  "krzyknął","krzyknęła","krzyknęli","krzyknęły","wykrzyknął","wykrzyknęła","zakrzyknął","wrzasnął","wrzasnęła",
+  "dodał","dodała","dodali","dodały",
+  "ciągnął","ciągnęła","ciągnęli","ciągnęły","przerwał","przerwała",
+  "wtrącił","wtrąciła","wtrącili","wtrąciły",
+  "zaczął","zaczęła","zaczęli","zaczęły","kontynuował","kontynuowała",
+  "westchnął","westchnęła","warknął","warknęła","syknął","syknęła","jęknął","jęknęła",
+  "sapnął","sapnęła","prychnął","prychnęła","parsknął","parsknęła",
+  "oznajmił","oznajmiła","oznajmili","oznajmiły",
+  "stwierdził","stwierdziła","stwierdzili","stwierdziły",
+  "zauważył","zauważyła","zauważyli","zauważyły",
+  "wyjaśnił","wyjaśniła","wyjaśnili","wyjaśniły","przyznał","przyznała",
+  "zawołał","zawołała","zawołali","zawołały","wołał","wołała",
+  "mówił","mówiła","mówili","mówiły","mamrotał","mamrotała",
+  "polecił","poleciła","rozkazał","rozkazała","poinformował","poinformowała",
+  "wykrztusił","wykrztusiła","dopowiedział","dopowiedziała","podsumował","podsumowała"
+].map(v=>v.charAt(0).toUpperCase()+v.slice(1)).join("|"));
+const RE_DIDAS_DOT = new RegExp("\\.\\s*[-\u2013\u2014]\\s*(" + SPEECH_VERBS_SRC + ")(?![A-Za-z\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017c\u017a\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u017b\u0179])", "g");
+const RE_DIDAS_QE  = new RegExp("([?!])\\s*[-\u2013\u2014]\\s*(" + SPEECH_VERBS_SRC + ")(?![A-Za-z\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017c\u017a\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u017b\u0179])", "g");
+function lowerFirst(s){ return s.charAt(0).toLowerCase() + s.slice(1); }
+
+function smartQuotesEN(t, uk){
+  const oD="\u201C", cD="\u201D", oS="\u2018", cS="\u2019";
+  const PO = uk ? oS : oD, PC = uk ? cS : cD;   // cudzysłów dialogowy (wpisany jako ") — US podwójny / UK pojedynczy
+  const openCtx = /[\s(\[\{\u2014\u2013\u201C\u2018>]/;
+  let out="";
+  for(let i=0;i<t.length;i++){
+    const ch=t[i], prev=i>0?t[i-1]:"", next=i<t.length-1?t[i+1]:"";
+    if(ch==='"'||ch==="\u201C"||ch==="\u201D"){
+      out += (prev==="" || openCtx.test(prev)) ? PO : PC;
+    } else if(ch==="'"||ch==="\u2018"||ch==="\u2019"){
+      if(/\d/.test(next) && (prev==="" || /\s/.test(prev))) out += cS;       // ’90s
+      else if(/[A-Za-z0-9\u201D\u2019)]/.test(prev)) out += cS;              // don’t, dogs’, word’
+      else if(prev==="" || openCtx.test(prev)) out += oS;                    // ‘opening
+      else out += cS;
+    } else out += ch;
+  }
+  return out;
+}
+function fixTypographyEN(t, uk){
+  t = t.replace(/\s+$/,"").replace(/^\s+/,"");
+  t = t.replace(/[ \t]{2,}/g," ");
+  t = t.replace(/\.{3,}/g,"\u2026");                                   // ellipsis …
+  t = t.replace(/[ \t]+([.,?!:;])/g,"$1");                            // space before punctuation
+  t = t.replace(/(\d)[ \t]*[-\u2013\u2014][ \t]*(\d)/g,"$1\u2013$2");  // number ranges → en-dash
+  if(uk){                                                             // UK: spaced en-dash
+    t = t.replace(/ ?-- ?/g," \u2013 ");
+    t = t.replace(/ [\u2014\u2013] /g," \u2013 ");
+    t = t.replace(/ - /g," \u2013 ");
+  } else {                                                            // US: closed em-dash
+    t = t.replace(/ ?-- ?/g,"\u2014");
+    t = t.replace(/ [\u2014\u2013] /g,"\u2014");
+    t = t.replace(/ - /g,"\u2014");
+  }
+  t = smartQuotesEN(t, uk);                                           // curly quotes (US: " primary; UK: ' primary)
+  return t;                                                           // no hard spaces, no dash-dialogue, no didascalia
+}
+function sceneMarker(){ return LANG==="en" ? "#" : "* * *"; }
+function fixTypography(t){
+  if(LANG === "en") return fixTypographyEN(t, VARIANT === "uk");
+  // 0. przytnij i zredukuj wielokrotne spacje
+  t = t.replace(/\s+$/,"").replace(/^\s+/,"");
+  t = t.replace(/[ \t]{2,}/g," ");
+  // 1. wielokropek (… jako jeden znak)
+  t = t.replace(/\.{3,}/g,"\u2026");
+  // 2. cudzysłowy proste " -> drukarskie „ ”
+  let op = true, out = "";
+  for(const ch of t){
+    if(ch === '"' || ch === "\u201E" || ch === "\u201D" || ch === "\u201C"){ out += op ? "\u201E" : "\u201D"; op = !op; }
+    else out += ch;
+  }
+  t = out;
+  // 3. kropka / przecinek PO cudzysłowie zamykającym: „To błąd.” -> „To błąd”.
+  t = t.replace(/([.,])\u201D/g, "\u201D$1");
+  // 4. usuń spację bezpośrednio przed . , ? ! : ;
+  t = t.replace(/[ \t]+([.,?!:;])/g, "$1");
+  // 5. łączone cyfry / zakresy -> półpauza bezspacjowa (1939–1945)
+  t = t.replace(/(\d)[ \t]*[-\u2013\u2014][ \t]*(\d)/g, "$1\u2013$2");
+  // 6. myślnik w zdaniu: spacjowany dywiz / pauza -> spacjowana półpauza ( – )
+  t = t.replace(/ [-\u2013\u2014] /g, " \u2013 ");
+  // 7. dialog na początku akapitu: dywiz / pauza -> półpauza + spacja
+  t = t.replace(/^[-\u2013\u2014]\s*/, "\u2013 ");
+  // 8. didaskalia: „. – Powiedział” -> „ – powiedział”; „? – Zapytał” -> „? – zapytał”
+  t = t.replace(RE_DIDAS_DOT, (m, v) => " \u2013 " + lowerFirst(v));
+  t = t.replace(RE_DIDAS_QE,  (m, p, v) => p + " \u2013 " + lowerFirst(v));
+  // 9. twarde spacje po jednoliterowych i, a, o, u, w, z (też wielkie)
+  t = t.replace(/(^|[\s\u2013\u2014\u201E\u201D(])([aiouwzAIOUWZ]) (?=\S)/g, "$1$2"+NBSP);
+  return t;
+}
+function isSceneBreak(s){ return (/^[\s*]*\*[\s*]*$/.test(s) && s.indexOf("*")>=0) || /^#{1,3}$/.test(s); }
+
+/* ===================== RENDER PODGLĄDU ===================== */
+function renderInto(container, text, title, hasHeader){
+  container.innerHTML = "";
+  const lines = (text||"").split(/\r?\n/).map(s=>s.trim()).filter(s=>s.length>0);
+  let headerText = "";
+  if(title){
+    const p = document.createElement("p"); p.className = "chtitle"; p.textContent = title; container.appendChild(p);
+  }
+  let startIdx = 0;
+  if(hasHeader && lines.length){
+    headerText = lines[0];
+    const p = document.createElement("p"); p.className = "header";
+    const em = document.createElement("em"); em.textContent = fixTypography(lines[0]);
+    p.appendChild(em); container.appendChild(p); startIdx = 1;
+  }
+  let reset = true;
+  for(let i=startIdx;i<lines.length;i++){
+    const s = lines[i];
+    if(isSceneBreak(s)){
+      const p = document.createElement("p"); p.className = "scene"; p.textContent = sceneMarker(); container.appendChild(p); reset = true; continue;
+    }
+    const p = document.createElement("p"); p.className = "body" + (reset ? " first" : ""); p.textContent = fixTypography(s); container.appendChild(p); reset = false;
+  }
+  return headerText;
+}
+
+function render(){
+  const ch = activeChapter(); if(!ch) return;
+  const page = document.getElementById("page");
+  const text = document.getElementById("src").value;
+  const title = document.getElementById("title").value.trim();
+  const hasHeader = document.getElementById("hasHeader").checked;
+  ch.text = text; ch.title = title; ch.hasHeader = hasHeader;
+
+  if(!text.trim()){
+    page.setAttribute("contenteditable","false");
+    page.innerHTML = emptyPageHTML();
+    ch.html = "";
+    document.getElementById("dl1").disabled = true;
+    document.getElementById("fname").textContent = "";
+    document.getElementById("stats").classList.remove("show");
+    refreshList(); updateBasicStats(); saveProject(); return;
+  }
+  const headerText = renderInto(page, text, title, hasHeader);
+  page.setAttribute("contenteditable","true");
+  ch.html = page.innerHTML;
+  const fn = filename(title, headerText);
+  ch.filename = fn;
+  document.getElementById("fname").textContent = fn;
+  page.dataset.filename = fn;
+  document.getElementById("dl1").disabled = false;
+  document.getElementById("dlall").disabled = false;
+  findStem = null; updateChipActive(); applyView(); refreshList(); updateBasicStats(); saveProject();
+}
+
+function loadActiveIntoUI(){
+  const ch = activeChapter(); if(!ch) return;
+  findStem = null; findLabel = ""; updateChipActive();
+  document.getElementById("src").value = ch.text || "";
+  document.getElementById("title").value = ch.title || "";
+  document.getElementById("hasHeader").checked = ch.hasHeader !== false;
+  const page = document.getElementById("page");
+  if(ch.html){
+    page.innerHTML = ch.html; page.setAttribute("contenteditable","true");
+    document.getElementById("dl1").disabled = false;
+    document.getElementById("fname").textContent = ch.filename || "";
+    page.dataset.filename = ch.filename || "";
+    applyView();
+  } else {
+    page.innerHTML = emptyPageHTML();
+    page.setAttribute("contenteditable","false");
+    document.getElementById("dl1").disabled = true;
+    document.getElementById("fname").textContent = "";
+    document.getElementById("stats").classList.remove("show");
+    const badge = document.getElementById("viewbadge"); if(badge) badge.classList.remove("show");
+  }
+  document.getElementById("dlall").disabled = !project.chapters.some(c=>c.html || (c.text&&c.text.trim()));
+  updateBasicStats();
+}
+
+/* ===================== LISTA ROZDZIAŁÓW ===================== */
+function chapterLabel(ch, idx){
+  if(ch.title) return ch.title;
+  if(ch.hasHeader && ch.text){
+    const first = ch.text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)[0];
+    if(first) return first.length > 38 ? first.slice(0,38)+"…" : first;
+  }
+  return t("chapterWord") + " " + (idx+1);
+}
+function refreshList(){
+  const list = document.getElementById("clist"); list.innerHTML = "";
+  project.chapters.forEach((ch, idx)=>{
+    const li = document.createElement("li");
+    li.className = "citem" + (ch.id===project.activeId ? " active" : ""); li.dataset.id = ch.id;
+    const title = document.createElement("span"); title.className = "ctitle"; title.textContent = chapterLabel(ch, idx); li.appendChild(title);
+    const meta = document.createElement("span"); meta.className = "cmeta"; meta.textContent = ch.text ? (countStats(ch.text).words + " w.") : "empty"; li.appendChild(meta);
+    const move = document.createElement("span"); move.className = "cmove";
+    const up = document.createElement("button"); up.className = "iconbtn"; up.textContent = "↑"; up.title="Move up"; up.disabled = idx===0;
+    up.addEventListener("click", e=>{ e.stopPropagation(); moveChapter(idx,-1); });
+    const dn = document.createElement("button"); dn.className = "iconbtn"; dn.textContent = "↓"; dn.title="Move down"; dn.disabled = idx===project.chapters.length-1;
+    dn.addEventListener("click", e=>{ e.stopPropagation(); moveChapter(idx,1); });
+    const del = document.createElement("button"); del.className = "iconbtn del"; del.textContent = "×"; del.title="Delete chapter";
+    del.addEventListener("click", e=>{ e.stopPropagation(); deleteChapter(ch.id); });
+    move.appendChild(up); move.appendChild(dn); move.appendChild(del); li.appendChild(move);
+    li.addEventListener("click", ()=>selectChapter(ch.id));
+    list.appendChild(li);
+  });
+}
+function selectChapter(id){ if(id===project.activeId) return; project.activeId = id; loadActiveIntoUI(); refreshList(); saveProject(); }
+function addChapter(){
+  const c = { id:uid(), title:"", text:"", html:"", hasHeader:true };
+  project.chapters.push(c); project.activeId = c.id;
+  loadActiveIntoUI(); refreshList(); document.getElementById("src").focus(); saveProject();
+}
+function moveChapter(idx, dir){
+  const j = idx + dir; if(j<0 || j>=project.chapters.length) return;
+  const arr = project.chapters; [arr[idx], arr[j]] = [arr[j], arr[idx]]; refreshList(); saveProject();
+}
+async function deleteChapter(id){
+  const idx = project.chapters.findIndex(c=>c.id===id); if(idx<0) return;
+  const ch = project.chapters[idx];
+  if((ch.text && ch.text.trim()) && !(await confirmModal(t("cfDeleteChapter")))) return;
+  project.chapters.splice(idx,1);
+  if(!project.chapters.length){ const c = { id:uid(), title:"", text:"", html:"", hasHeader:true }; project.chapters.push(c); project.activeId = c.id; }
+  else if(project.activeId===id){ project.activeId = project.chapters[Math.max(0, idx-1)].id; }
+  loadActiveIntoUI(); refreshList(); saveProject(); toast(t("tChapterDeleted"));
+}
+
+/* ===================== WYDOBYCIE AKAPITÓW (DOM -> dane) ===================== */
+function paraRuns(p){
+  const runs = [];
+  (function walk(node, ital){
+    node.childNodes.forEach(ch=>{
+      if(ch.nodeType === 3){ if(ch.nodeValue) runs.push({text:ch.nodeValue, italic:ital}); }
+      else if(ch.nodeType === 1){
+        let it = ital; const tag = ch.tagName;
+        if(tag === "I" || tag === "EM") it = true;
+        const fs = ch.style && ch.style.fontStyle;
+        if(fs === "italic") it = true; if(fs === "normal") it = false;
+        if(tag === "BR"){ runs.push({text:"\n", italic:it}); return; }
+        walk(ch, it);
+      }
+    });
+  })(p, false);
+  const merged = [];
+  for(const r of runs){
+    if(merged.length && merged[merged.length-1].italic === r.italic) merged[merged.length-1].text += r.text;
+    else merged.push({text:r.text, italic:r.italic});
+  }
+  return merged;
+}
+function extractParas(container){
+  const out = [];
+  container.querySelectorAll("p").forEach(p=>{
+    if(p.classList.contains("empty")) return;
+    let type = "body";
+    if(p.classList.contains("chtitle")) type = "chtitle";
+    else if(p.classList.contains("header")) type = "header";
+    else if(p.classList.contains("scene")) type = "scene";
+    else if(p.classList.contains("first")) type = "first";
+    out.push({ type, runs: paraRuns(p) });
+  });
+  return out;
+}
+// Buduje listę akapitów dla całego maszynopisu z page-breakiem między rozdziałami.
+function allChaptersParas(){
+  const buf = document.createElement("div");
+  const paras = [];
+  let n = 0;
+  project.chapters.forEach(ch=>{
+    if(ch.html && ch.html.trim()) buf.innerHTML = ch.html;
+    else if(ch.text && ch.text.trim()) renderInto(buf, ch.text, ch.title, ch.hasHeader);
+    else return;
+    const ps = extractParas(buf);
+    if(ps.length && n>0) ps[0].pageBreak = true;
+    paras.push.apply(paras, ps); n++;
+  });
+  return { paras, count:n };
+}
+
+/* ===================== EKSPORT: RTF ===================== */
+function rtfEscape(s){
+  let r = "";
+  for(const ch of s){
+    const c = ch.codePointAt(0);
+    if(ch === "\\") r += "\\\\"; else if(ch === "{") r += "\\{"; else if(ch === "}") r += "\\}";
+    else if(c === 0x00A0) r += "\\~"; else if(c < 128) r += ch; else r += "\\u" + c + "?";
+  }
+  return r;
+}
+function rtfBodyFromData(paras, s){
+  const tw = cm => Math.round(cm*567);
+  const line = Math.round(240*s.lineSpacing), fs = Math.round(s.fontPt*2), ind = tw(s.indentCm);
+  let body = "";
+  for(const p of paras){
+    if(p.type==='tpgap'){ body += "\\pard\\sl240\\slmult1\\par\n"; continue; }
+    let props = "\\pard";
+    if(p.type==='tp'){ const al = p.align==='right' ? "\\qr" : p.align==='center' ? "\\qc" : "\\ql"; props += al + "\\sl240\\slmult1\\sa0\\sb0"; }
+    else if(p.type==='chtitle')      props += "\\qc\\sb0\\sa240\\sl"+line+"\\slmult1";
+    else if(p.type==='header')  props += "\\qc\\sb0\\sa360\\sl"+line+"\\slmult1";
+    else if(p.type==='scene')   props += "\\qc\\sb240\\sa240\\sl"+line+"\\slmult1";
+    else { props += "\\qj\\sl"+line+"\\slmult1\\sa0\\sb0"; props += (p.type==='first') ? "\\fi0" : ("\\fi"+ind); }
+    if(p.pageBreak) props = "\\page" + props;
+    props += "\\f0\\fs"+fs+(p.bold?"\\b":"")+" ";
+    let txt = "";
+    for(const r of p.runs){ const esc = rtfEscape(r.text).replace(/\n/g,"\\line "); txt += r.italic ? ("\\i "+esc+"\\i0 ") : esc; }
+    body += props + txt + (p.bold?"\\b0":"") + "\\par\n";
+  }
+  return body;
+}
+function rtfWrap(body, s, headerOpts){
+  const mmTw = mm => Math.round(mm*56.6929), tw = cm => Math.round(cm*567);
+  let docflags = "", headers = "", lang = "";
+  if(headerOpts && headerOpts.book){
+    lang = "\\deflang1045";
+    docflags += "\\margmirror\\hyphauto1\\widowctrl";
+    if(headerOpts.gutterCm) docflags += "\\gutter"+tw(headerOpts.gutterCm);
+  } else if(headerOpts && headerOpts.running){
+    const lbl = headerOpts.label || "";
+    const txt = rtfEscape(lbl + (headerOpts.showNum && lbl ? " / " : ""));
+    headers += "{\\header\\pard\\qr\\f0\\fs"+Math.round(s.fontPt*2)+" "+txt+(headerOpts.showNum ? "\\chpgn" : "")+"\\par}";
+    if(headerOpts.titlePgEmpty){ docflags += "\\titlepg"; headers += "{\\headerf\\pard\\par}"; }
+    if(headerOpts.startZero){ docflags += "\\pgnstart0"; }
+  }
+  return "{\\rtf1\\ansi\\ansicpg1250\\uc1\\deff0"+lang+"{\\fonttbl{\\f0\\froman Times New Roman;}}"
+    + "\\paperw"+mmTw(s.pageW)+"\\paperh"+mmTw(s.pageH)
+    + "\\margl"+tw(s.margLeft)+"\\margr"+tw(s.margRight)+"\\margt"+tw(s.margTop)+"\\margb"+tw(s.margBottom)
+    + docflags + "\n" + headers + body + "}";
+}
+
+/* ===================== EKSPORT: DOCX ===================== */
+function xmlEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+const DOCX_DECL = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n';
+const CT_XML = DOCX_DECL +
+  '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+  '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+  '<Default Extension="xml" ContentType="application/xml"/>' +
+  '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+  '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+  '</Types>';
+const RELS_XML = DOCX_DECL +
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+  '</Relationships>';
+const DOC_RELS_XML = DOCX_DECL +
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+  '</Relationships>';
+function stylesXml(s, book){
+  const half = Math.round(s.fontPt*2);
+  const lang = book ? '<w:lang w:val="'+((LANG==="en")?(VARIANT==="uk"?"en-GB":"en-US"):"pl-PL")+'"/>' : '';
+  const pPrDef = book ? '<w:pPrDefault><w:pPr><w:widowControl/></w:pPr></w:pPrDefault>' : '';
+  return DOCX_DECL +
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+    '<w:docDefaults><w:rPrDefault><w:rPr>' +
+    '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>' +
+    '<w:sz w:val="'+half+'"/><w:szCs w:val="'+half+'"/>'+lang +
+    '</w:rPr></w:rPrDefault>'+pPrDef+'</w:docDefaults>' +
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>' +
+    '</w:styles>';
+}
+function pXml(p, m){
+  if(p.type==='tpgap'){
+    return '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>';
+  }
+  let jc = m.bodyJc || "both", ind = '<w:ind w:firstLine="'+m.indent+'"/>', extra = "";
+  if(p.type==='tp'){ jc = p.align || 'left'; ind=""; extra='<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>'; }
+  else if(p.type==='chtitle'){ jc="center"; ind=""; extra='<w:spacing w:before="0" w:after="240" w:line="'+m.line+'" w:lineRule="auto"/>'; }
+  else if(p.type==='header'){ jc="center"; ind=""; extra='<w:spacing w:before="0" w:after="360" w:line="'+m.line+'" w:lineRule="auto"/>'; }
+  else if(p.type==='scene'){ jc="center"; ind=""; extra='<w:spacing w:before="240" w:after="240" w:line="'+m.line+'" w:lineRule="auto"/>'; }
+  else { extra='<w:spacing w:before="0" w:after="0" w:line="'+m.line+'" w:lineRule="auto"/>'; if(p.type==='first') ind='<w:ind w:firstLine="0"/>'; }
+  const before = p.pageBreak ? '<w:pageBreakBefore/>' : '';
+  const pPr = '<w:pPr>'+before+extra+ind+'<w:jc w:val="'+jc+'"/></w:pPr>';
+  const sc = (p.type==='chtitle') ? '<w:smallCaps/>' : '';
+  const bd = p.bold ? '<w:b/><w:bCs/>' : '';
+  let runs = "";
+  for(const r of (p.runs||[])){
+    const it = r.italic ? '<w:i/><w:iCs/>' : '';
+    const rPr = '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="'+m.half+'"/><w:szCs w:val="'+m.half+'"/>'+sc+bd+it+'</w:rPr>';
+    const parts = String(r.text).split("\n");
+    let t = "";
+    parts.forEach((seg,idx)=>{ if(idx>0) t += '<w:br/>'; t += '<w:t xml:space="preserve">'+xmlEsc(seg)+'</w:t>'; });
+    runs += '<w:r>'+rPr+t+'</w:r>';
+  }
+  if(!runs) runs = '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="'+m.half+'"/></w:rPr><w:t xml:space="preserve"></w:t></w:r>';
+  return '<w:p>'+pPr+runs+'</w:p>';
+}
+function docxXml(paras, s, headerOpts){
+  const tw = cm => Math.round(cm*567), mmTw = mm => Math.round(mm*56.6929);
+  const m = { half: Math.round(s.fontPt*2), line: Math.round(240*s.lineSpacing), indent: tw(s.indentCm), bodyJc: (s.profile==="ksiazka") ? "both" : (LANG==="en" ? "left" : "both") };
+  let body = "";
+  for(const p of paras) body += pXml(p, m);
+  const open = DOCX_DECL + '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>';
+  if(headerOpts && headerOpts.book){
+    const gutter = tw(headerOpts.gutterCm || 0);
+    const sect = '<w:sectPr>' +
+      '<w:pgSz w:w="'+mmTw(s.pageW)+'" w:h="'+mmTw(s.pageH)+'"/>' +
+      '<w:pgMar w:top="'+tw(s.margTop)+'" w:right="'+tw(s.margRight)+'" w:bottom="'+tw(s.margBottom)+'" w:left="'+tw(s.margLeft)+'" w:header="709" w:footer="709" w:gutter="'+gutter+'"/>' +
+      '</w:sectPr>';
+    return open + body + sect + '</w:body></w:document>';
+  }
+  let refs = "";
+  if(headerOpts && headerOpts.running){
+    refs += '<w:headerReference w:type="default" r:id="rId2"/>';
+    if(headerOpts.titlePgEmpty) refs += '<w:headerReference w:type="first" r:id="rId3"/>';
+  }
+  const pgNum = (headerOpts && headerOpts.startZero) ? '<w:pgNumType w:start="0"/>' : '';
+  const titlePg = (headerOpts && headerOpts.titlePgEmpty) ? '<w:titlePg/>' : '';
+  const sect = '<w:sectPr>' + refs +
+    '<w:pgSz w:w="'+mmTw(s.pageW)+'" w:h="'+mmTw(s.pageH)+'"/>' +
+    '<w:pgMar w:top="'+tw(s.margTop)+'" w:right="'+tw(s.margRight)+'" w:bottom="'+tw(s.margBottom)+'" w:left="'+tw(s.margLeft)+'" w:header="709" w:footer="709" w:gutter="0"/>' +
+    pgNum + titlePg + '</w:sectPr>';
+  return open + body + sect + '</w:body></w:document>';
+}
+function contentTypesXml(headerFiles, footerFiles, hasSettings){
+  let ov = '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+         + '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>';
+  if(hasSettings) ov += '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>';
+  (headerFiles||[]).forEach(h=>{ ov += '<Override PartName="/word/'+h+'" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>'; });
+  (footerFiles||[]).forEach(f=>{ ov += '<Override PartName="/word/'+f+'" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>'; });
+  return DOCX_DECL + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+    + '<Default Extension="xml" ContentType="application/xml"/>' + ov + '</Types>';
+}
+function docRelsXml(headerRels, footerRels, settingsRel){
+  let r = '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
+  if(settingsRel) r += '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>';
+  (headerRels||[]).forEach(x=>{ r += '<Relationship Id="'+x.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="'+x.target+'"/>'; });
+  (footerRels||[]).forEach(x=>{ r += '<Relationship Id="'+x.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="'+x.target+'"/>'; });
+  return DOCX_DECL + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + r + '</Relationships>';
+}
+function headerRunningXml(s, label, showNum){
+  const half = Math.round(s.fontPt*2);
+  const rPr = '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="'+half+'"/><w:szCs w:val="'+half+'"/></w:rPr>';
+  let content = "";
+  if(label){ content += '<w:r>'+rPr+'<w:t xml:space="preserve">'+xmlEsc(label + (showNum ? " / " : ""))+'</w:t></w:r>'; }
+  if(showNum){
+    content += '<w:r>'+rPr+'<w:fldChar w:fldCharType="begin"/></w:r>'
+            + '<w:r>'+rPr+'<w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+            + '<w:r>'+rPr+'<w:fldChar w:fldCharType="separate"/></w:r>'
+            + '<w:r>'+rPr+'<w:t>1</w:t></w:r>'
+            + '<w:r>'+rPr+'<w:fldChar w:fldCharType="end"/></w:r>';
+  }
+  if(!content) content = '<w:r>'+rPr+'<w:t xml:space="preserve"></w:t></w:r>';
+  return DOCX_DECL + '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    + '<w:p><w:pPr><w:jc w:val="right"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>'+rPr+'</w:pPr>'
+    + content
+    + '</w:p></w:hdr>';
+}
+function headerEmptyXml(s){
+  const half = Math.round(s.fontPt*2);
+  return DOCX_DECL + '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    + '<w:p><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="'+half+'"/></w:rPr></w:pPr></w:p></w:hdr>';
+}
+function settingsXml(opts){
+  let s = "";
+  if(opts.mirror) s += '<w:mirrorMargins/>';
+  if(opts.hyphenate) s += '<w:autoHyphenation/><w:consecutiveHyphenLimit w:val="3"/><w:hyphenationZone w:val="357"/>';
+  if(opts.evenOdd) s += '<w:evenAndOddHeaders/>';
+  return DOCX_DECL + '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' + s + '</w:settings>';
+}
+function footerNumXml(s, align){
+  const half = Math.round(s.fontPt*2);
+  const rPr = '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="'+half+'"/><w:szCs w:val="'+half+'"/></w:rPr>';
+  const fld = '<w:r>'+rPr+'<w:fldChar w:fldCharType="begin"/></w:r>'
+            + '<w:r>'+rPr+'<w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+            + '<w:r>'+rPr+'<w:fldChar w:fldCharType="separate"/></w:r>'
+            + '<w:r>'+rPr+'<w:t>1</w:t></w:r>'
+            + '<w:r>'+rPr+'<w:fldChar w:fldCharType="end"/></w:r>';
+  return DOCX_DECL + '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    + '<w:p><w:pPr><w:jc w:val="'+align+'"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>'+rPr+'</w:pPr>'
+    + fld + '</w:p></w:ftr>';
+}
+function footerEmptyXml(s){
+  const half = Math.round(s.fontPt*2);
+  return DOCX_DECL + '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    + '<w:p><w:pPr><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="'+half+'"/></w:rPr></w:pPr></w:p></w:ftr>';
+}
+async function buildDocxBlob(paras, s, headerOpts){
+  const zip = new JSZip();
+  zip.folder("_rels").file(".rels", RELS_XML);
+  const w = zip.folder("word");
+  if(headerOpts && headerOpts.book){
+    zip.file("[Content_Types].xml", contentTypesXml([], [], true));
+    w.file("document.xml", docxXml(paras, s, headerOpts));
+    w.file("styles.xml", stylesXml(s, true));
+    w.file("settings.xml", settingsXml({ mirror:!!headerOpts.mirror, hyphenate:!!headerOpts.hyphenate, evenOdd:false }));
+    w.folder("_rels").file("document.xml.rels", docRelsXml([], [], true));
+    return await zip.generateAsync({type:"blob", mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  }
+  const running = !!(headerOpts && headerOpts.running);
+  const titlePgEmpty = !!(headerOpts && headerOpts.titlePgEmpty);
+  const headerFiles = [], headerRels = [];
+  if(running){ headerFiles.push("header2.xml"); headerRels.push({id:"rId2", target:"header2.xml"}); }
+  if(titlePgEmpty){ headerFiles.push("header1.xml"); headerRels.push({id:"rId3", target:"header1.xml"}); }
+  zip.file("[Content_Types].xml", contentTypesXml(headerFiles));
+  w.file("document.xml", docxXml(paras, s, headerOpts));
+  w.file("styles.xml", stylesXml(s));
+  if(running) w.file("header2.xml", headerRunningXml(s, headerOpts.label || "", !!headerOpts.showNum));
+  if(titlePgEmpty) w.file("header1.xml", headerEmptyXml(s));
+  w.folder("_rels").file("document.xml.rels", docRelsXml(headerRels));
+  return await zip.generateAsync({type:"blob", mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+
+/* ===================== EKSPORT: E-BOOK (HTML) ===================== */
+function currentProfileIsEbook(){ return project.settings.profile === "ebook"; }
+function ebookRunsToHtml(runs){
+  let h = "";
+  for(const r of (runs||[])){
+    const segs = String(r.text).replace(/\u00A0/g, " ").split("\n");
+    let t = "";
+    segs.forEach((seg, i)=>{ if(i>0) t += "<br/>"; t += escHtml(seg); });
+    h += r.italic ? "<em>" + t + "</em>" : t;
+  }
+  return h;
+}
+function ebookPlainText(runs){
+  return (runs||[]).map(r=>r.text).join("").replace(/\u00A0/g," ").replace(/\s+/g," ").trim();
+}
+// Zbiera dane jednego rozdziału dla e-booka: nagłówki + treść jako czysty HTML.
+function chapterParts(ch, n, toc){
+  const buf = document.createElement("div");
+  if(ch.html && ch.html.trim()) buf.innerHTML = ch.html;
+  else if(ch.text && ch.text.trim()) renderInto(buf, ch.text, ch.title, ch.hasHeader);
+  else return null;
+  const ps = extractParas(buf);
+  if(!ps.length) return null;
+  const titlePara = ps.find(p=>p.type==="chtitle") || null;
+  const headerPara = ps.find(p=>p.type==="header") || null;
+  const anchor = "rozdzial-" + n;
+  let h1text, h2text = "";
+  if(titlePara){ h1text = ebookPlainText(titlePara.runs); if(headerPara) h2text = ebookPlainText(headerPara.runs); }
+  else if(headerPara){ h1text = ebookPlainText(headerPara.runs); }
+  else { h1text = t("chapterWord") + " " + n; }
+  if(toc) toc.push({ text:h1text, sub:h2text, anchor });
+  let inner = '  <h1 id="' + anchor + '">' + escHtml(h1text) + '</h1>\n';
+  if(h2text) inner += '  <h2>' + escHtml(h2text) + '</h2>\n';
+  ps.forEach(p=>{
+    if(p === titlePara || p === headerPara) return;
+    if(p.type === "scene"){ inner += '  <p class="scene">* * *</p>\n'; return; }
+    const cls = (p.type === "first") ? ' class="first"' : '';
+    inner += '  <p' + cls + '>' + ebookRunsToHtml(p.runs) + '</p>\n';
+  });
+  return { anchor, h1:h1text, h2:h2text, inner };
+}
+function ebookCss(){
+  return [
+"  body{font-family:Georgia,\"Times New Roman\",serif;line-height:1.5;text-align:justify;-webkit-hyphens:auto;hyphens:auto;margin:5%;color:#111}",
+"  h1{page-break-before:always;text-align:center;font-size:1.6em;line-height:1.25;margin:1.4em 0 .8em;font-weight:600}",
+"  h2{text-align:center;font-size:1.15em;font-style:italic;font-weight:400;margin:0 0 1.4em}",
+"  p{margin:0;text-indent:1.4em;text-align:justify}",
+"  p.first{text-indent:0}",
+"  p.scene{text-indent:0;text-align:center;margin:1.2em 0}",
+"  nav.toc{page-break-after:always}",
+"  nav.toc h2{font-style:normal;font-size:1.3em;margin:1em 0;text-align:left}",
+"  nav.toc ol{list-style:none;padding:0;margin:0}",
+"  nav.toc li{margin:.45em 0;text-indent:0;text-align:left}",
+"  nav.toc li.sub{margin-left:1.3em;font-style:italic;font-size:.95em}",
+"  nav.toc a{text-decoration:none;color:inherit}"
+  ].join("\n");
+}
+function ebookDocWrap(title, author, bodyHtml){
+  const meta = author ? '<meta name="author" content="' + xmlEsc(author) + '">\n' : "";
+  return '<!DOCTYPE html>\n<html lang="' + docLang() + '">\n<head>\n<meta charset="UTF-8">\n'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+    + '<title>' + escHtml(title) + '</title>\n' + meta
+    + '<style>\n' + ebookCss() + '\n</style>\n</head>\n<body>\n'
+    + bodyHtml + '</body>\n</html>\n';
+}
+function buildEbookHTML(){
+  const s = project.settings;
+  const title = (s.manuscriptTitle||"").trim() || "E-book";
+  const author = (s.author||"").trim();
+  const toc = [];
+  let chaptersHtml = "", n = 0;
+  project.chapters.forEach(ch=>{
+    const part = chapterParts(ch, n+1, toc);
+    if(!part) return;
+    n++;
+    chaptersHtml += '<section class="chapter" id="sec-' + part.anchor + '">\n' + part.inner + '</section>\n';
+  });
+  let tocHtml = '<nav class="toc" id="toc" role="doc-toc">\n  <h2>' + t("tocTitle") + '</h2>\n  <ol>\n';
+  toc.forEach(e=>{
+    tocHtml += '    <li><a href="#' + e.anchor + '">' + escHtml(e.text) + '</a></li>\n';
+    if(e.sub) tocHtml += '    <li class="sub"><a href="#' + e.anchor + '">' + escHtml(e.sub) + '</a></li>\n';
+  });
+  tocHtml += '  </ol>\n</nav>\n';
+  return ebookDocWrap(title, author, tocHtml + chaptersHtml);
+}
+function downloadEbookAll(){
+  const html = buildEbookHTML();
+  const base = slug((project.settings.manuscriptTitle||"").trim() || "ebook") || "ebook";
+  saveAnyBlob(new Blob([html], {type:"text/html;charset=utf-8"}), base + ".html");
+  toast(t("tGotEbookHtml"));
+}
+function downloadEbookOne(){
+  const ch = activeChapter(); if(!ch) return;
+  const part = chapterParts(ch, 1, null);
+  if(!part){ toast(t("tNoContent")); return; }
+  const html = ebookDocWrap(part.h1 || t("chapterWord"), (project.settings.author||"").trim(),
+    '<section class="chapter" id="sec-' + part.anchor + '">\n' + part.inner + '</section>\n');
+  saveAnyBlob(new Blob([html], {type:"text/html;charset=utf-8"}), (slug(part.h1) || "chapter") + ".html");
+  toast(t("tGotChapterHtml"));
+}
+
+/* ===================== EKSPORT EPUB ===================== */
+const EPUB_CONTAINER = '<?xml version="1.0" encoding="UTF-8"?>\n'
+  + '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n'
+  + '  <rootfiles>\n    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>\n  </rootfiles>\n'
+  + '</container>\n';
+function uuid4(){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c=>{ const r = Math.random()*16|0; return (c==="x"?r:(r&0x3|0x8)).toString(16); }); }
+function epubChapterXhtml(part){
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<!DOCTYPE html>\n'
+    + '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="' + docLang() + '" xml:lang="' + docLang() + '">\n'
+    + '<head>\n  <meta charset="utf-8"/>\n  <title>' + escHtml(part.h1 || t("chapterWord")) + '</title>\n  <link rel="stylesheet" type="text/css" href="style.css"/>\n</head>\n'
+    + '<body>\n' + part.inner + '</body>\n</html>\n';
+}
+function epubNavXhtml(title, chapters){
+  let items = "";
+  chapters.forEach(c=>{ items += '      <li><a href="' + c.file + '#' + c.anchor + '">' + escHtml(c.h1) + '</a></li>\n'; });
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<!DOCTYPE html>\n'
+    + '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="' + docLang() + '" xml:lang="' + docLang() + '">\n'
+    + '<head>\n  <meta charset="utf-8"/>\n  <title>' + t("tocTitle") + '</title>\n  <link rel="stylesheet" type="text/css" href="style.css"/>\n</head>\n'
+    + '<body>\n  <nav epub:type="toc" id="toc" class="toc">\n    <h2>' + t("tocTitle") + '</h2>\n    <ol>\n'
+    + items
+    + '    </ol>\n  </nav>\n</body>\n</html>\n';
+}
+function epubNcx(uid, title, chapters){
+  let pts = "";
+  chapters.forEach((c,i)=>{
+    pts += '    <navPoint id="np' + (i+1) + '" playOrder="' + (i+1) + '">\n'
+      + '      <navLabel><text>' + escHtml(c.h1) + '</text></navLabel>\n'
+      + '      <content src="' + c.file + '#' + c.anchor + '"/>\n'
+      + '    </navPoint>\n';
+  });
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n'
+    + '  <head>\n'
+    + '    <meta name="dtb:uid" content="' + xmlEsc(uid) + '"/>\n'
+    + '    <meta name="dtb:depth" content="1"/>\n'
+    + '    <meta name="dtb:totalPageCount" content="0"/>\n'
+    + '    <meta name="dtb:maxPageNumber" content="0"/>\n'
+    + '  </head>\n'
+    + '  <docTitle><text>' + escHtml(title) + '</text></docTitle>\n'
+    + '  <navMap>\n' + pts + '  </navMap>\n'
+    + '</ncx>\n';
+}
+function epubOpf(uid, title, author, modified, chapters){
+  let manifest = '    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n'
+    + '    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>\n'
+    + '    <item id="css" href="style.css" media-type="text/css"/>\n';
+  let spine = '    <itemref idref="nav"/>\n';
+  chapters.forEach((c,i)=>{
+    const id = "chap" + (i+1);
+    manifest += '    <item id="' + id + '" href="' + c.file + '" media-type="application/xhtml+xml"/>\n';
+    spine += '    <itemref idref="' + id + '"/>\n';
+  });
+  const creator = author ? '    <dc:creator>' + escHtml(author) + '</dc:creator>\n' : "";
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="' + docLang() + '">\n'
+    + '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
+    + '    <dc:identifier id="bookid">' + escHtml(uid) + '</dc:identifier>\n'
+    + '    <dc:title>' + escHtml(title) + '</dc:title>\n'
+    + '    <dc:language>' + docLang() + '</dc:language>\n'
+    + creator
+    + '    <meta property="dcterms:modified">' + modified + '</meta>\n'
+    + '  </metadata>\n'
+    + '  <manifest>\n' + manifest + '  </manifest>\n'
+    + '  <spine toc="ncx">\n' + spine + '  </spine>\n'
+    + '</package>\n';
+}
+async function buildEpubBlob(){
+  const s = project.settings;
+  const title = (s.manuscriptTitle||"").trim() || "E-book";
+  const author = (s.author||"").trim();
+  const chapters = [];
+  let n = 0;
+  project.chapters.forEach(ch=>{
+    const part = chapterParts(ch, n+1, null);
+    if(!part) return;
+    n++;
+    chapters.push({ file:"chap"+n+".xhtml", anchor:part.anchor, h1:part.h1, xhtml: epubChapterXhtml(part) });
+  });
+  if(!chapters.length) return null;
+  const uid = "urn:uuid:" + uuid4();
+  const modified = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const zip = new JSZip();
+  zip.file("mimetype", "application/epub+zip", { compression:"STORE" });
+  zip.folder("META-INF").file("container.xml", EPUB_CONTAINER);
+  const o = zip.folder("OEBPS");
+  o.file("style.css", ebookCss());
+  chapters.forEach(c=> o.file(c.file, c.xhtml));
+  o.file("nav.xhtml", epubNavXhtml(title, chapters));
+  o.file("toc.ncx", epubNcx(uid, title, chapters));
+  o.file("content.opf", epubOpf(uid, title, author, modified, chapters));
+  return await zip.generateAsync({ type:"blob", mimeType:"application/epub+zip" });
+}
+async function downloadEpub(){
+  if(!window.JSZip){ toast(t("tEpubNeedsNet")); return; }
+  let blob;
+  try{ blob = await buildEpubBlob(); }
+  catch(e){ console.error(e); toast(t("tEpubFail")); return; }
+  if(!blob){ toast(t("tNoContent")); return; }
+  const base = slug((project.settings.manuscriptTitle||"").trim() || "ebook") || "ebook";
+  saveAnyBlob(blob, base + ".epub");
+  toast("Pobrano EPUB");
+}
+
+/* ===================== POBIERANIE ===================== */
+function saveAnyBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+async function downloadParas(paras, baseName, headerOpts){
+  const s = project.settings;
+  if(window.JSZip){
+    try{
+      const blob = await buildDocxBlob(paras, s, headerOpts);
+      saveAnyBlob(blob, baseName + ".docx");
+      toast("Pobrano " + baseName + ".docx");
+      return;
+    }catch(e){ console.error(e); toast(t("tDocxErrRtf")); }
+  } else {
+    toast(t("tDocxNoLibRtf"));
+  }
+  const rtf = rtfWrap(rtfBodyFromData(paras, s), s, headerOpts);
+  saveAnyBlob(new Blob([rtf], {type:"application/rtf"}), baseName + ".rtf");
+}
+function currentProfileIsBook(){ return project.settings.profile === "ksiazka"; }
+function bookOpts(){
+  return { book:true, mirror:true, hyphenate:true, gutterCm:(LANG==="en"?0.95:0.5) };
+}
+function downloadOne(){
+  const page = document.getElementById("page");
+  if(page.getAttribute("contenteditable") !== "true") return;
+  const base = (page.dataset.filename || "chapter.rtf").replace(/\.(rtf|docx)$/i, "");
+  downloadParas(extractParas(page), base, currentProfileIsBook() ? bookOpts() : null);
+}
+function downloadAll(){
+  const s = project.settings;
+  const { paras, count } = allChaptersParas();
+  if(!paras.length){ toast(t("tNoContent")); return; }
+  let out = paras;
+  if(s.titlePage){
+    const totalWords = project.chapters.reduce((a,c)=>a+countStats(c.text||"").words, 0);
+    const tp = buildTitlePageParas(s, totalWords);
+    if(out.length) out[0] = Object.assign({}, out[0], {pageBreak:true});
+    out = tp.concat(out);
+  }
+  if(currentProfileIsBook()){
+    downloadParas(out, "ksiazka_calosc", bookOpts());
+    setTimeout(()=>toast(t("tBook") + " — " + count + " " + t("tChAbbr") + (s.titlePage ? " + " + t("tTitlePage") : "")), 500);
+    return;
+  }
+  const pageNum = s.pageNum || "from1";
+  const hasHeader = s.runningHeader || pageNum !== "none";
+  let headerOpts = null;
+  if(hasHeader){
+    const kw = headerKeyword(s.manuscriptTitle);
+    const label = s.runningHeader ? (headerSurname(s.author) + (kw ? " / " + kw : "")).trim() : "";
+    headerOpts = {
+      running: true,
+      titlePgEmpty: !!s.titlePage || pageNum === "from2",
+      startZero: (pageNum === "from1" && !!s.titlePage),
+      showNum: pageNum !== "none",
+      label: label
+    };
+  }
+  downloadParas(out, "manuscript_full", headerOpts);
+  setTimeout(()=>toast(t("tAll") + " — " + count + " " + t("tChAbbr") + (s.titlePage ? " + " + t("tTitlePage") : "")), 500);
+}
+
+/* ===================== ANALIZA (długość / zdania) ===================== */
+function wordCount(s){ return (s.match(/[^\s]+/g) || []).length; }
+function protectSent(t){
+  t = t.replace(/(\d)[.,](\d)/g, "$1\uE000$2");
+  if(LANG === "en"){
+    t = t.replace(/\b[ei]\.[ge]\./gi, m=>m.replace(/\./g,"\uE000"));                 // e.g. i.e.
+    t = t.replace(/\b[ap]\.m\./gi, m=>m.replace(/\./g,"\uE000"));                     // a.m. p.m.
+    t = t.replace(/\b(?:u\.s|u\.k|d\.c|ph\.d)\./gi, m=>m.replace(/\./g,"\uE000"));    // U.S. U.K. D.C. Ph.D.
+    const abbrEN = ["mr","mrs","ms","mx","dr","prof","st","jr","sr","vs","etc","inc","ltd","co","no","vol","fig","al","cf","rev","hon","gen","col","sgt","capt","lt","mt","ave","rd","blvd","dept","est","ca","approx"];
+    abbrEN.forEach(a=>{ t = t.replace(new RegExp("\\b"+a+"\\.","gi"), a+"\uE000"); });
+    t = t.replace(/\b([A-Z])\./g, "$1\uE000");                                        // initials J. K.
+  } else {
+    t = t.replace(/\bm\.in\./gi, "m\uE000in\uE000");
+    const abbrPL = ["np","itd","itp","tj","tzn","tzw","dr","prof","inż","mgr","ul","al","nr","r","w","pkt","rys","tab","ok","por","zob","wg","cd","pn","płk","gen","św","hr","godz","str","tel"];
+    abbrPL.forEach(a=>{ t = t.replace(new RegExp("\\b"+a+"\\.","gi"), a+"\uE000"); });
+    t = t.replace(/\b([A-ZŁŚŻŹĆŃÓĄĘ])\./g, "$1\uE000");
+  }
+  return t;
+}
+function sentenceCount(text){
+  let t = (text||"").trim(); if(!t) return 0;
+  t = protectSent(t);
+  const m = t.match(/[.!?…]+(?=\s|$|["'”’»)\u2014\u2013])/g);
+  let n = m ? m.length : 0; if(n === 0) n = 1; return n;
+}
+function paintLength(p, key){
+  const box = {short:"rgba(224,166,74,.75)", run:"rgba(201,86,64,.9)", long:"rgba(46,106,163,.8)"};
+  const bg  = {short:"rgba(224,166,74,.16)", run:"rgba(201,86,64,.18)", long:"rgba(46,106,163,.12)"};
+  if(!key){ p.style.boxShadow=""; p.style.background=""; return; }
+  p.style.boxShadow = "inset 3px 0 0 " + box[key];
+  p.style.background = "linear-gradient(90deg," + bg[key] + ",transparent 75%)";
+}
+function paintSent(p, key){
+  const box = {s1:"rgba(155,111,176,.9)", s2:"rgba(192,163,208,.85)"};
+  const bg  = {s1:"rgba(155,111,176,.18)", s2:"rgba(192,163,208,.16)"};
+  if(!key){ p.style.boxShadow=""; p.style.background=""; return; }
+  p.style.boxShadow = "inset 3px 0 0 " + box[key];
+  p.style.background = "linear-gradient(90deg," + bg[key] + ",transparent 80%)";
+}
+function clearAnalysisStyles(page){
+  page.classList.remove("analyze");
+  page.querySelectorAll("p").forEach(p=>{ p.style.boxShadow=""; p.style.background=""; p.removeAttribute("data-wc"); });
+}
+/* --- wspólna analiza akapitów --- */
+function getAnalysis(page){
+  const ps = Array.from(page.querySelectorAll("p")).filter(p=>!p.classList.contains("empty"));
+  const info = ps.map(p=>{
+    const txt = p.textContent.trim();
+    const isBody = p.classList.contains("body");
+    const cc0 = txt.charCodeAt(0);
+    const isDlg = isBody && (cc0===0x2013 || cc0===0x2014 || cc0===0x201C || cc0===0x201E || cc0===0x2018 || cc0===0x00AB || cc0===0x0022 || cc0===0x0027);
+    return {p, wc: wordCount(txt), sc: sentenceCount(txt), isBody, isDlg, isNarr: isBody && !isDlg, run:false};
+  });
+  let i = 0, runCount = 0;
+  while(i < info.length){
+    if(info[i].isNarr && info[i].wc <= AN_SHORT){
+      let j = i; while(j < info.length && info[j].isNarr && info[j].wc <= AN_SHORT) j++;
+      if(j - i >= AN_RUN){ for(let k=i;k<j;k++) info[k].run = true; runCount++; }
+      i = j;
+    } else i++;
+  }
+  return { ps, info, runCount };
+}
+function computeStatsSpark(page){
+  const { ps, info, runCount } = getAnalysis(page);
+  let nNarr=0, nDlg=0, sum=0, shortN=0, longest=0, one=0, two=0;
+  info.forEach(d=>{
+    if(d.isDlg) nDlg++;
+    if(!d.isNarr) return;
+    nNarr++; sum += d.wc; if(d.wc > longest) longest = d.wc;
+    if(d.wc <= AN_SHORT) shortN++;
+    if(d.sc === 1) one++; else if(d.sc === 2) two++;
+  });
+  setStat("s-total", ps.length);
+  setStat("s-split", nDlg + " / " + nNarr);
+  setStat("s-avg", (nNarr ? Math.round(sum/nNarr) : 0) + " " + t("rWordsAbbr"));
+  setStat("s-short", shortN, shortN > 0);
+  setStat("s-run", runCount, runCount > 0);
+  setStat("s-long", longest + " " + t("rWordsAbbr"));
+  setStatV("s-1s", one, one > 0);
+  setStatV("s-2s", two, two > 0);
+  renderSparkline();
+  document.getElementById("stats").classList.add("show");
+}
+function paintParagraphs(page){
+  const { info } = getAnalysis(page);
+  const paint = (analysisMode === "paralen" || analysisMode === "parasent");
+  page.classList.toggle("analyze", paint);
+  info.forEach(d=>{
+    d.p.style.boxShadow=""; d.p.style.background=""; d.p.removeAttribute("data-wc");
+    if(!d.isNarr || !paint) return;
+    let lengthKey = null, sentKey = null;
+    if(d.wc <= AN_SHORT) lengthKey = d.run ? "run" : "short"; else if(d.wc >= AN_LONG) lengthKey = "long";
+    if(d.sc === 1) sentKey = "s1"; else if(d.sc === 2) sentKey = "s2";
+    d.p.setAttribute("data-wc", (LANG==="en") ? (d.wc + " w · " + d.sc + " s") : (d.wc + " sł · " + d.sc + " zd"));
+    if(analysisMode === "paralen") paintLength(d.p, lengthKey); else paintSent(d.p, sentKey);
+  });
+}
+/* --- granice zdań (współdzielone przez wykres i podświetlanie) --- */
+function protectPL(t){ return protectSent(t); }
+function sentenceBoundaries(text){
+  const t = protectPL(text); const b = [];
+  for(let i=0;i<t.length;i++){
+    if(/[.!?…]/.test(t[i])){
+      let j=i; while(j+1<t.length && /[.!?…]/.test(t[j+1])) j++;
+      const nxt = t[j+1];
+      if(nxt===undefined || /\s/.test(nxt) || /["'”’»)\u2014\u2013]/.test(nxt)) b.push(j+1);
+      i = j;
+    }
+  }
+  return b;
+}
+function sentClass(words){ return words <= AN_S_SHORT ? "s-short" : (words >= AN_S_LONG ? "s-long" : "s-mid"); }
+/* --- podświetlanie długości zdań (widok tylko do odczytu) --- */
+function wrapParaSentences(p){
+  p.querySelectorAll("span.sent, span.hit").forEach(unwrapSpan); p.normalize();
+  if(p.classList.contains("empty")) return;
+  if(!(p.classList.contains("body") || p.classList.contains("first"))) return;
+  const full = p.textContent;
+  const bounds = sentenceBoundaries(full);
+  if(!bounds.length) return;
+  let offset = 0, bi = 0, curText = "";
+  const out = document.createDocumentFragment();
+  let cur = document.createElement("span");
+  const flush = ()=>{ if(cur.childNodes.length){ cur.className = "sent " + sentClass((curText.match(/\S+/g)||[]).length); out.appendChild(cur); } cur = document.createElement("span"); curText = ""; };
+  Array.from(p.childNodes).forEach(node=>{
+    if(node.nodeType === 3){
+      const text = node.nodeValue; let start = 0;
+      while(bi < bounds.length && bounds[bi] <= offset + text.length){
+        const cut = bounds[bi] - offset;
+        const seg = text.slice(start, cut);
+        if(seg){ cur.appendChild(document.createTextNode(seg)); curText += seg; }
+        flush(); start = cut; bi++;
+      }
+      const rest = text.slice(start);
+      if(rest){ cur.appendChild(document.createTextNode(rest)); curText += rest; }
+      offset += text.length;
+    } else {
+      cur.appendChild(node.cloneNode(true)); curText += node.textContent;
+      offset += node.textContent.length;
+    }
+  });
+  if(cur.childNodes.length){ cur.className = "sent " + sentClass((curText.match(/\S+/g)||[]).length); out.appendChild(cur); }
+  p.innerHTML = ""; p.appendChild(out);
+}
+function wrapSentences(page){ page.querySelectorAll("p").forEach(wrapParaSentences); }
+/* --- podświetlanie wystąpień słowa (widok tylko do odczytu) --- */
+function wrapParaFind(p, stem){
+  p.querySelectorAll("span.hit").forEach(unwrapSpan); p.normalize();
+  if(p.classList.contains("empty")) return 0;
+  let count = 0;
+  const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null);
+  const texts = []; let n; while(n = walker.nextNode()) texts.push(n);
+  texts.forEach(tn=>{
+    const s = tn.nodeValue; const re = /[a-ząćęłńóśżź]+/gi; let m, last = 0, any = false;
+    const frag = document.createDocumentFragment();
+    while(m = re.exec(s)){
+      if((LANG==="en"?enStem:plStem)(m[0].toLowerCase()) === stem){
+        any = true; count++;
+        if(m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        const sp = document.createElement("span"); sp.className = "hit"; sp.textContent = m[0];
+        frag.appendChild(sp); last = re.lastIndex;
+      }
+    }
+    if(any){ if(last < s.length) frag.appendChild(document.createTextNode(s.slice(last))); tn.parentNode.replaceChild(frag, tn); }
+  });
+  return count;
+}
+function wrapFind(page, stem){
+  let count = 0;
+  Array.from(page.querySelectorAll("p")).forEach(p=>{ count += wrapParaFind(p, stem); });
+  const first = page.querySelector("span.hit");
+  if(first && first.scrollIntoView) first.scrollIntoView({block:"center", behavior:"smooth"});
+  return count;
+}
+/* --- edycja przy włączonym podświetleniu: zachowanie kursora + odświeżanie aktywnego akapitu --- */
+function activeParaFromCaret(){
+  const sel = window.getSelection(); if(!sel || !sel.rangeCount) return null;
+  let node = sel.getRangeAt(0).startContainer;
+  let p = node.nodeType === 3 ? node.parentNode : node;
+  while(p && p.tagName !== "P") p = p.parentNode;
+  return p;
+}
+function caretOffsetIn(el){
+  const sel = window.getSelection(); if(!sel || !sel.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  if(!el.contains(range.startContainer)) return null;
+  const pre = range.cloneRange(); pre.selectNodeContents(el); pre.setEnd(range.startContainer, range.startOffset);
+  return pre.toString().length;
+}
+function setCaretIn(el, offset){
+  const sel = window.getSelection(); const range = document.createRange();
+  let remaining = offset, placed = false;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null); let t;
+  while(t = walker.nextNode()){ const len = t.nodeValue.length; if(remaining <= len){ range.setStart(t, remaining); placed = true; break; } remaining -= len; }
+  if(!placed){ range.selectNodeContents(el); range.collapse(false); } else range.collapse(true);
+  sel.removeAllRanges(); sel.addRange(range);
+}
+function repaintActiveSentences(){
+  const page = document.getElementById("page");
+  const p = activeParaFromCaret();
+  if(!p || !page.contains(p) || !(p.classList.contains("body") || p.classList.contains("first"))){ wrapSentences(page); return; }
+  const off = caretOffsetIn(p);
+  wrapParaSentences(p);
+  if(off != null) setCaretIn(p, off);
+}
+function repaintActiveFind(){
+  const page = document.getElementById("page");
+  const p = activeParaFromCaret();
+  if(p && page.contains(p) && !p.classList.contains("empty")){
+    const off = caretOffsetIn(p);
+    wrapParaFind(p, findStem);
+    if(off != null) setCaretIn(p, off);
+  } else { wrapFind(page, findStem); }
+  const c = page.querySelectorAll("span.hit").length;
+  setBadge(bdgHi(findLabel, c));
+}
+/* --- Powtórzone początki zdań: podświetla TYLKO pierwsze słowo pasujących zdań --- */
+function openingClsArray(text, word){
+  const arr = new Array(text.length).fill(null);
+  const bounds = sentenceBoundaries(text); const segs = []; let start = 0;
+  bounds.forEach(c=>{ segs.push([start, c]); start = c; });
+  if(start < text.length) segs.push([start, text.length]);
+  const reW = new RegExp(DETOX_WORD);
+  segs.forEach(([s,e])=>{
+    const sub = text.slice(s, e);
+    const mm = sub.match(reW);
+    if(!mm) return;
+    if(mm[0].toLowerCase() === word){ const ws = s + mm.index; for(let i=ws;i<ws+mm[0].length;i++) arr[i] = "o"; }
+  });
+  return arr;
+}
+function paintParaOpening(p, word){
+  p.querySelectorAll("span.hit").forEach(unwrapSpan); p.normalize();
+  if(p.classList.contains("empty")) return;
+  if(!(p.classList.contains("body") || p.classList.contains("first"))) return;
+  const cls = openingClsArray(p.textContent, word);
+  if(!cls.some(Boolean)) return;
+  const ctx = { off:0 }, frag = document.createDocumentFragment();
+  Array.from(p.childNodes).forEach(ch=> frag.appendChild(buildClsNode(ch, cls, ctx, ()=>"hit open")));
+  p.innerHTML = ""; p.appendChild(frag);
+}
+function paintOpening(page, word){ page.querySelectorAll("p").forEach(p=>paintParaOpening(p, word)); }
+function repaintActiveOpening(){
+  const page = document.getElementById("page");
+  const p = activeParaFromCaret();
+  if(!p || !page.contains(p) || !(p.classList.contains("body") || p.classList.contains("first"))){ paintOpening(page, findOpening); }
+  else { const off = caretOffsetIn(p); paintParaOpening(p, findOpening); if(off != null) setCaretIn(p, off); }
+  const c = page.querySelectorAll("span.hit").length;
+  setBadge(bdgOpen(openLabel, c));
+}
+function pickOpening(word, label){
+  if(findOpening === word){ clearHighlight(); return; }
+  findStem = null; findLabel = "";
+  findOpening = word; openLabel = label;
+  updateChipActive(); applyView();
+}
+const DETOX_CLICHE = [
+  /^(taniec|tańc.*)$/, /^symfoni.*$/, /^(tkanek|tkank.*)$/, /^mozaik.*$/,
+  /^labiryn(t|c).*$/, /^kluczow.*$/, /^niesamowit.*$/, /^niezwyk(ł|l).*$/,
+  /^świadectw.*$/, /^przypomnie.*$/
+];
+const DETOX_MORAL = [
+  /^w\s+końcu\b/, /^ostatecznie\b/, /^to\s+przypomnieni/,
+  /^przypomina(ł[oa]|ły|li)?\s+to\b/, /^to\s+nie\s+tylko\b/
+];
+const DETOX_CONTRA = new Set(["lecz","ale","tylko"]);
+const DETOX_WORD = "[a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ]+";
+/* --- zasoby angielskie (Detoks / szum / powtórzenia) — używane gdy LANG==="en" --- */
+const DETOX_CLICHE_EN = [
+  /^delv(e|ed|es|ing)$/, /^tapestr(y|ies)$/, /^testaments?$/, /^realms?$/,
+  /^navigat(e|es|ed|ing|ion)$/, /^intricat\w*$/, /^multifacet\w*$/, /^nuanc(e|ed|es)$/,
+  /^seamless\w*$/, /^leverag\w*$/, /^underscor\w*$/, /^pivotal$/, /^vibran\w*$/,
+  /^bustl\w*$/, /^myriad$/, /^plethora$/, /^embark\w*$/, /^unleash\w*$/, /^harness\w*$/,
+  /^foster(s|ed|ing)?$/, /^elevat\w*$/, /^empower\w*$/, /^resonat\w*$/, /^illuminat\w*$/,
+  /^beacons?$/, /^symphon\w*$/, /^mosaics?$/, /^labyrinth\w*$/, /^kaleidoscop\w*$/,
+  /^interplay$/, /^juxtapos\w*$/, /^dichotom\w*$/, /^paradigm\w*$/, /^holistic$/,
+  /^synerg\w*$/, /^transformativ\w*$/, /^culminat\w*$/, /^quintessential$/, /^unwavering$/,
+  /^steadfast$/, /^indelible$/, /^enigmatic$/, /^captivat\w*$/, /^mesmeriz\w*$/,
+  /^palpabl\w*$/, /^ethereal$/, /^poignan\w*$/, /^cascad\w*$/, /^crescendo$/, /^cacophon\w*$/
+];
+const DETOX_MORAL_EN = [
+  /^in\s+the\s+end\b/, /^ultimately\b/, /^after\s+all\b/, /^in\s+a\s+world\b/,
+  /^at\s+the\s+end\s+of\s+the\s+day\b/, /^little\s+did\b/, /^perhaps\s+that\b/,
+  /^and\s+perhaps\b/, /^(it\s+was\s+)?a\s+reminder\s+that\b/, /^in\s+that\s+moment\b/,
+  /^and\s+in\s+that\s+moment\b/, /^sometimes,/, /^it\s+just\s+goes\s+to\s+show\b/,
+  /^maybe,?\s+just\s+maybe\b/, /^it\s+wasn['’]?t\s+just\b/, /^and\s+that['’]?s\b/,
+  /^it\s+was\s+more\s+than\b/
+];
+const DETOX_CONTRA_EN = new Set(["but","rather","instead","merely","yet"]);
+const DETOX_NEG_PL = new Set(["nie"]);
+const DETOX_NEG_EN = new Set(["not","never","nothing"]);
+const SZUM_FILLER_EN = new Set(["that","which","who","very","really","just","quite","rather","actually","simply","basically","literally","somewhat","perhaps","maybe","somehow","totally","truly","honestly","definitely","certainly","essentially","virtually","fairly"]);
+const SZUM_BYC_EN = new Set(["be","being","been","am","is","are","was","were"]);
+const SZUM_PHRASES_EN = [/\bsort\s+of\b/gi, /\bkind\s+of\b/gi, /\ba\s+bit\b/gi, /\bof\s+course\b/gi];
+const EN_STOP = new Set("a an and the of to in is are was were be been being am for on at by with as it its this that these those i you he she we they them him her his their our your my me us do does did have has had will would shall should can could may might must not no nor so than then there here when where why how which who whom whose what but or if because while about above below up down out off over under again all any both each few more most other some such only own same too very just don now into onto from".split(/\s+/));
+const EN_SUF = ["ization","ational","fulness","ousness","iveness","izing","ation","ingly","edly","ments","ness","ment","ions","ies","ied","ing","ers","est","ful","ity","ous","ly","ed","es","s"];
+function enStem(w){
+  let s = w.toLowerCase();
+  if(s.length <= 3) return s;
+  for(const x of EN_SUF){
+    if(s.length - x.length >= 3 && s.endsWith(x)){
+      let b = s.slice(0, s.length - x.length);
+      if(x === "ies" || x === "ied") b += "y";
+      else if(x === "ing" || x === "ed" || x === "es" || x === "ions") b = b.replace(/([bdgklmnprt])\1$/, "$1");
+      return b;
+    }
+  }
+  return s;
+}
+function detoxAdjInfo(w){
+  if(w.length < 4) return null;
+  const ends = [
+    ["ący","C"],["ąca","F"],["ące","N"],["ony","C"],["ona","F"],["one","N"],
+    ["any","C"],["ana","F"],["ane","N"],["owy","C"],["owa","F"],["owe","N"],
+    ["czy","C"],["cza","F"],["cze","N"],["szy","C"],["sza","F"],["sze","N"],
+    ["sty","C"],["sta","F"],["ste","N"],["kie","N"],["gie","N"],
+    ["ny","C"],["na","F"],["ne","N"],["ły","C"],["ła","F"],["łe","N"],
+    ["wy","C"],["wa","F"],["we","N"],["ki","C"],["ka","F"],["gi","C"],["ga","F"],["cy","C"],["ca","F"],["ce","N"],
+    ["ego","O"],["emu","O"],["ych","O"],["ymi","O"],["imi","O"],["ej","O"],["ym","O"],["im","O"]
+  ];
+  for(const [suf,g] of ends){ if(w.endsWith(suf)) return g; }
+  return null;
+}
+function detoxRanges(text){
+  const ranges = [];
+  const cliches = (LANG==="en") ? DETOX_CLICHE_EN : DETOX_CLICHE;
+  const morals  = (LANG==="en") ? DETOX_MORAL_EN  : DETOX_MORAL;
+  const contra  = (LANG==="en") ? DETOX_CONTRA_EN : DETOX_CONTRA;
+  const negSet  = (LANG==="en") ? DETOX_NEG_EN    : DETOX_NEG_PL;
+  const negWin  = (LANG==="en") ? 6 : 4;
+  const reWord = new RegExp(DETOX_WORD, "g");
+  const toks = []; let m;
+  while(m = reWord.exec(text)) toks.push({ lw:m[0].toLowerCase(), s:m.index, e:m.index+m[0].length });
+  // 1. klisze / buzzwords (po rdzeniu)
+  toks.forEach(t=>{ if(cliches.some(re=>re.test(t.lw))) ranges.push({s:t.s, e:t.e, cat:"cliche"}); });
+  // zdania z offsetami
+  const bounds = sentenceBoundaries(text);
+  const segs = []; let start = 0;
+  bounds.forEach(c=>{ segs.push({s:start, e:c}); start = c; });
+  if(start < text.length) segs.push({s:start, e:text.length});
+  // 2. kontrast przez zaprzeczenie: „nie" + (lecz|ale|tylko) w odległości 1–4 słów
+  segs.forEach(seg=>{
+    const st = toks.filter(t=>t.s>=seg.s && t.s<seg.e);
+    for(let i=0;i<st.length;i++){
+      if(negSet.has(st[i].lw)){
+        for(let k=1;k<=negWin && i+k<st.length;k++){
+          if(contra.has(st[i+k].lw)){ ranges.push({s:seg.s, e:seg.e, cat:"neg"}); i = st.length; break; }
+        }
+      }
+    }
+  });
+  // 3. moralizatorska końcówka akapitu (ostatnie zdanie)
+  if(segs.length){
+    const last = segs[segs.length-1];
+    const lead = text.slice(last.s, last.e).replace(/^\s+/, "").toLowerCase();
+    if(morals.some(re=>re.test(lead))) ranges.push({s:last.s, e:last.e, cat:"moral"});
+  }
+  // 4a. triady: PL „Słowo, Słowo i Słowo" / EN „Word, Word(,) and Word"
+  const reTriad = (LANG==="en")
+    ? new RegExp("(" + DETOX_WORD + "),\\s+(" + DETOX_WORD + "),?\\s+and\\s+(" + DETOX_WORD + ")", "g")
+    : new RegExp("(" + DETOX_WORD + "),\\s+(" + DETOX_WORD + ")\\s+i\\s+(" + DETOX_WORD + ")", "g");
+  while(m = reTriad.exec(text)){ ranges.push({s:m.index, e:m.index+m[0].length, cat:"triad"}); }
+  // 4b. duety przymiotnikowe (tylko PL — wymaga końcówek odmiany)
+  if(LANG !== "en") for(let j=1;j+1<toks.length;j++){
+    if(toks[j].lw !== "i") continue;
+    const a = toks[j-1], b = toks[j+1], c = toks[j+2];
+    if(!a || !b || !c) continue;
+    if(!/^\s+$/.test(text.slice(a.e, toks[j].s))) continue;
+    if(!/^\s+$/.test(text.slice(toks[j].e, b.s))) continue;
+    if(a.lw.length < 4 || b.lw.length < 4) continue;
+    if(PL_STOP.has(a.lw) || PL_STOP.has(b.lw)) continue;
+    const ga = detoxAdjInfo(a.lw), gb = detoxAdjInfo(b.lw);
+    if(!ga || !gb || ga !== gb) continue;
+    ranges.push({s:a.s, e:b.e, cat:"triad"});
+  }
+  return ranges;
+}
+const DETOX_PRIO = { neg:1, moral:2, triad:3, cliche:4 };
+function detoxClassArray(text){
+  const ranges = detoxRanges(text).sort((x,y)=>DETOX_PRIO[x.cat]-DETOX_PRIO[y.cat]);
+  const arr = new Array(text.length).fill(null);
+  ranges.forEach(r=>{ for(let i=r.s;i<r.e && i<arr.length;i++) arr[i] = r.cat; });
+  return arr;
+}
+function buildClsNode(node, cls, ctx, classFor){
+  if(node.nodeType === 3){
+    const text = node.nodeValue, frag = document.createDocumentFragment();
+    let i = 0;
+    while(i < text.length){
+      const c = cls[ctx.off + i]; let j = i + 1;
+      while(j < text.length && cls[ctx.off + j] === c) j++;
+      const seg = text.slice(i, j);
+      if(c){ const sp = document.createElement("span"); sp.className = classFor(c); sp.textContent = seg; frag.appendChild(sp); }
+      else frag.appendChild(document.createTextNode(seg));
+      i = j;
+    }
+    ctx.off += text.length;
+    return frag;
+  }
+  const clone = node.cloneNode(false);
+  node.childNodes.forEach(ch=> clone.appendChild(buildClsNode(ch, cls, ctx, classFor)));
+  return clone;
+}
+function detoxBuildNode(node, cls, ctx){ return buildClsNode(node, cls, ctx, c=>"detox detox-" + c); }
+function paintParaDetox(p){
+  p.querySelectorAll("span.detox").forEach(unwrapSpan); p.normalize();
+  if(p.classList.contains("empty")) return;
+  if(!(p.classList.contains("body") || p.classList.contains("first"))) return;
+  const cls = detoxClassArray(p.textContent);
+  if(!cls.some(Boolean)) return;
+  const ctx = { off:0 }, frag = document.createDocumentFragment();
+  Array.from(p.childNodes).forEach(ch=> frag.appendChild(detoxBuildNode(ch, cls, ctx)));
+  p.innerHTML = ""; p.appendChild(frag);
+}
+function paintDetox(page){
+  page.classList.remove("analyze");
+  page.querySelectorAll("p").forEach(paintParaDetox);
+}
+function repaintActiveDetox(){
+  const page = document.getElementById("page");
+  const p = activeParaFromCaret();
+  if(!p || !page.contains(p) || !(p.classList.contains("body") || p.classList.contains("first"))){ paintDetox(page); return; }
+  const off = caretOffsetIn(p);
+  paintParaDetox(p);
+  if(off != null) setCaretIn(p, off);
+}
+/* --- Wskaźnik szumu: wyrazy-wytrychy, słaby „być", przysłówki na -nie --- */
+const SZUM_FILLER = new Set(["że","iż","który","która","które","którego","której","któremu","którym","których","którzy","którą","bardzo","właśnie","naprawdę"]);
+const SZUM_BYC = new Set(["być","jestem","jesteś","jest","jesteśmy","jesteście","są","byłem","byłam","byłeś","byłaś","był","była","było","byliśmy","byłyśmy","byliście","byłyście","byli","były","będę","będziesz","będzie","będziemy","będziecie","będą","bądź","bądźcie","byłbym","byłabym","byłby","byłaby","byłoby","bylibyśmy","byłybyśmy","byliby","byłyby"]);
+const SZUM_PHRASES = [/\bpo\s+prostu\b/gi, /\bw\s+sumie\b/gi];
+function szumStats(text){
+  const arr = new Array(text.length).fill(null);
+  const re = new RegExp(DETOX_WORD, "g"); const toks = []; let m;
+  while(m = re.exec(text)) toks.push({ lw:m[0].toLowerCase(), s:m.index, e:m.index+m[0].length });
+  let noise = 0;
+  const FILL = (LANG==="en") ? SZUM_FILLER_EN : SZUM_FILLER;
+  const WEAK = (LANG==="en") ? SZUM_BYC_EN : SZUM_BYC;
+  const PHR  = (LANG==="en") ? SZUM_PHRASES_EN : SZUM_PHRASES;
+  toks.forEach(t=>{
+    if(FILL.has(t.lw) || WEAK.has(t.lw)){ for(let i=t.s;i<t.e;i++) arr[i] = "n"; noise++; }
+  });
+  PHR.forEach(rx=>{ rx.lastIndex = 0; let mm; while(mm = rx.exec(text)){ for(let i=mm.index;i<mm.index+mm[0].length;i++) arr[i] = "n"; noise += mm[0].trim().split(/\s+/).length; } });
+  return { arr, noise, total: toks.length };
+}
+function paintParaSzum(p){
+  p.querySelectorAll("span.szum").forEach(unwrapSpan); p.normalize();
+  if(p.classList.contains("empty")) return { noise:0, total:0 };
+  if(!(p.classList.contains("body") || p.classList.contains("first"))) return { noise:0, total:0 };
+  const st = szumStats(p.textContent);
+  if(st.arr.some(Boolean)){
+    const ctx = { off:0 }, frag = document.createDocumentFragment();
+    Array.from(p.childNodes).forEach(ch=> frag.appendChild(buildClsNode(ch, st.arr, ctx, c=>"szum szum-" + c)));
+    p.innerHTML = ""; p.appendChild(frag);
+  }
+  return { noise:st.noise, total:st.total };
+}
+function szumCount(page){
+  let noise = 0, total = 0;
+  page.querySelectorAll("p").forEach(p=>{
+    if(p.classList.contains("empty") || !(p.classList.contains("body") || p.classList.contains("first"))) return;
+    const st = szumStats(p.textContent); noise += st.noise; total += st.total;
+  });
+  return { noise, total };
+}
+function szumBadge(c){
+  const pct = c.total ? (100 * c.noise / c.total) : 0;
+  setBadge(t("bNoise") + " — " + pct.toLocaleString(LANG==="en"?"en-US":"pl-PL", {maximumFractionDigits:1}) + "% " + t("bNoiseWords") + " · " + t("bEdit"));
+}
+function paintSzum(page){
+  page.classList.remove("analyze");
+  let noise = 0, total = 0;
+  page.querySelectorAll("p").forEach(p=>{ const r = paintParaSzum(p); noise += r.noise; total += r.total; });
+  return { noise, total };
+}
+function repaintActiveSzum(){
+  const page = document.getElementById("page");
+  const p = activeParaFromCaret();
+  if(!p || !page.contains(p) || !(p.classList.contains("body") || p.classList.contains("first"))){ paintSzum(page); }
+  else { const off = caretOffsetIn(p); paintParaSzum(p); if(off != null) setCaretIn(p, off); }
+  szumBadge(szumCount(page));
+}
+/* --- czyszczenie i przebudowa strony --- */
+function unwrapSpan(s){ const par = s.parentNode; while(s.firstChild) par.insertBefore(s.firstChild, s); par.removeChild(s); }
+function stripPageDecor(page){
+  page.querySelectorAll("span.sent, span.hit, span.detox, span.szum").forEach(unwrapSpan);
+  page.querySelectorAll("p").forEach(p=>{ p.style.boxShadow=""; p.style.background=""; p.removeAttribute("data-wc"); });
+}
+function cleanCloneHTML(){
+  const page = document.getElementById("page");
+  const c = page.cloneNode(true);
+  c.querySelectorAll("span.sent, span.hit, span.detox, span.szum").forEach(unwrapSpan);
+  c.querySelectorAll("p").forEach(p=>{ p.removeAttribute("style"); p.removeAttribute("data-wc"); });
+  return c.innerHTML;
+}
+function rebuildPageFromHTML(){
+  const page = document.getElementById("page"), ch = activeChapter();
+  if(ch && ch.html) page.innerHTML = ch.html;
+  stripPageDecor(page);
+}
+/* --- orkiestracja widoku --- */
+function applyView(){
+  const page = document.getElementById("page"), ch = activeChapter();
+  const badge = document.getElementById("viewbadge");
+  if(!(ch && ch.html)){ document.getElementById("stats").classList.remove("show"); if(badge) badge.classList.remove("show"); return; }
+  if(findStem || findOpening || analysisMode === "sentlen" || analysisMode === "detoks" || analysisMode === "szum"){
+    if(ch) ch.html = cleanCloneHTML();
+    rebuildPageFromHTML();
+    page.setAttribute("contenteditable","true");
+    if(findStem){ const c = wrapFind(page, findStem); setBadge(bdgHi(findLabel, c)); }
+    else if(findOpening){ paintOpening(page, findOpening); const c = page.querySelectorAll("span.hit").length; setBadge(bdgOpen(openLabel, c)); }
+    else if(analysisMode === "sentlen"){ wrapSentences(page); setBadge(t("bSentLen") + " · " + t("bEdit")); }
+    else if(analysisMode === "detoks"){ paintDetox(page); setBadge(t("bDetox") + " · " + t("bEdit")); }
+    else { szumBadge(paintSzum(page)); }
+    if(badge) badge.classList.add("show");
+  } else {
+    if(page.querySelector("span.sent, span.hit, span.detox, span.szum")) rebuildPageFromHTML(); else stripPageDecor(page);
+    page.setAttribute("contenteditable","true");
+    if(badge) badge.classList.remove("show");
+    paintParagraphs(page);
+  }
+  computeStatsSpark(page);
+}
+function setBadge(txt){ const b = document.getElementById("viewbadge"); if(b){ const t = b.querySelector(".vtext"); if(t) t.textContent = txt; } }
+function bdgHi(label, c){ const q = (LANG==="en")?"“":"„"; return t("bHi") + " " + q + label + "” — " + c + " " + t("bMatches") + " · " + t("bEdit"); }
+function bdgOpen(label, c){ const q = (LANG==="en")?"“":"„"; return t("bOpenings") + ": " + q + label + "” — " + c + " · " + t("bEdit"); }
+function clearHighlight(){
+  findStem = null; findLabel = "";
+  findOpening = null; openLabel = "";
+  if(analysisMode === "sentlen" || analysisMode === "detoks" || analysisMode === "szum") analysisMode = "off";
+  updateModeButtons(); updateChipActive(); applyView();
+}
+function updateModeButtons(){
+  document.getElementById("modeLen").classList.toggle("active", analysisMode === "paralen");
+  document.getElementById("modeSent").classList.toggle("active", analysisMode === "parasent");
+  document.getElementById("modeSentLen").classList.toggle("active", analysisMode === "sentlen");
+  const md = document.getElementById("modeDetoks"); if(md) md.classList.toggle("active", analysisMode === "detoks");
+  const ms = document.getElementById("modeSzum"); if(ms) ms.classList.toggle("active", analysisMode === "szum");
+}
+function updateChipActive(){
+  document.querySelectorAll("#freqbox .chip").forEach(c=>{ c.classList.toggle("active", !!findStem && c.dataset.stem === findStem); });
+  document.querySelectorAll("#freqbox .echoes li").forEach(li=>{ li.classList.toggle("active", !!findStem && li.dataset.stem === findStem); });
+  document.querySelectorAll("#freqbox .openings li").forEach(li=>{ li.classList.toggle("active", !!findOpening && li.dataset.open === findOpening); });
+}
+function pickWord(stem, label){
+  if(findStem === stem){ clearHighlight(); return; }
+  findStem = stem; findLabel = label;
+  findOpening = null; openLabel = "";
+  updateChipActive(); applyView();
+}
+function setStat(id, val, flag){ const e = document.getElementById(id); e.textContent = val; e.parentElement.classList.toggle("flag", !!flag); }
+function setStatV(id, val, flag){ const e = document.getElementById(id); e.textContent = val; e.parentElement.classList.toggle("flagv", !!flag); }
+function setMode(m){
+  findStem = null; findLabel = "";
+  findOpening = null; openLabel = "";
+  analysisMode = (analysisMode === m) ? "off" : m;
+  updateModeButtons(); updateChipActive(); applyView();
+}
+
+/* ===================== STATYSTYKI PODSTAWOWE ===================== */
+function countStats(text){
+  const t = text || "";
+  const words = (t.match(/\S+/g) || []).length;
+  const stripNL = t.replace(/\r?\n/g, "");
+  const charsWith = [...stripNL].length;
+  const charsNo = [...t.replace(/\s/g, "")].length;
+  return { words, charsWith, charsNo };
+}
+function bookStats(){
+  let words=0, charsWith=0, charsNo=0;
+  project.chapters.forEach(c=>{ const s=countStats(c.text||""); words+=s.words; charsWith+=s.charsWith; charsNo+=s.charsNo; });
+  return { chapters: project.chapters.length, words, charsWith, charsNo };
+}
+function fmtReadingTime(min){
+  if(min < 1) return "less than 1 min";
+  if(min < 60) return min + " min";
+  const h = Math.floor(min/60), m = min % 60;
+  return h + " h" + (m ? " " + m + " min" : "");
+}
+function updateBookStats(b){
+  b = b || bookStats();
+  const sp = document.getElementById("statspanel"); if(!sp) return;
+  document.getElementById("sb-ch").textContent = b.chapters.toLocaleString("pl-PL");
+  document.getElementById("sb-words").textContent = b.words.toLocaleString("pl-PL");
+  document.getElementById("sb-charss").textContent = b.charsWith.toLocaleString("pl-PL");
+  document.getElementById("sb-pages").textContent = (b.charsWith/1800).toLocaleString("pl-PL", {maximumFractionDigits:1});
+  document.getElementById("sb-read").textContent = fmtReadingTime(Math.round(b.words/200));
+}
+function updateBasicStats(){
+  const cur = document.getElementById("src").value;
+  const s = countStats(cur);
+  document.getElementById("b-words").textContent = s.words.toLocaleString("pl-PL");
+  document.getElementById("b-chars").textContent = s.charsNo.toLocaleString("pl-PL");
+  document.getElementById("b-charss").textContent = s.charsWith.toLocaleString("pl-PL");
+  const b = bookStats();
+  updateBookStats(b);
+}
+
+/* ===================== USTAWIENIA FORMATU ===================== */
+function applyPreview(){
+  const s = project.settings, w = document.getElementById("pagewrap").style;
+  w.setProperty("--pg-w", s.pageW + "mm");
+  w.setProperty("--pg-h", s.pageH + "mm");
+  w.setProperty("--pg-mt", (s.margTop*10) + "mm");
+  w.setProperty("--pg-mr", (s.margRight*10) + "mm");
+  w.setProperty("--pg-mb", (s.margBottom*10) + "mm");
+  w.setProperty("--pg-ml", (s.margLeft*10) + "mm");
+  w.setProperty("--pg-fs", s.fontPt + "pt");
+  w.setProperty("--pg-lh", s.lineSpacing);
+  w.setProperty("--pg-indent", (s.indentCm*10) + "mm");
+}
+function fillSettingsInputs(){
+  const s = project.settings;
+  document.getElementById("selPage").value = s.pageW + "x" + s.pageH;
+  document.getElementById("inFont").value = s.fontPt;
+  document.getElementById("selLine").value = String(s.lineSpacing);
+  document.getElementById("inIndent").value = s.indentCm;
+  document.getElementById("inMT").value = s.margTop;
+  document.getElementById("inMB").value = s.margBottom;
+  document.getElementById("inML").value = s.margLeft;
+  document.getElementById("inMR").value = s.margRight;
+  document.getElementById("pfManu").classList.toggle("on", s.profile === "maszynopis");
+  document.getElementById("pfBook").classList.toggle("on", s.profile === "ksiazka");
+  { const eb = document.getElementById("pfEbook"); if(eb) eb.classList.toggle("on", s.profile === "ebook"); }
+  updateExportButtons();
+  if(document.getElementById("inAuthor")){
+    document.getElementById("inAuthor").value = s.author || "";
+    document.getElementById("inMsTitle").value = s.manuscriptTitle || "";
+    document.getElementById("inContact").value = s.contact || "";
+    document.getElementById("ckTitlePage").checked = !!s.titlePage;
+    document.getElementById("ckHeader").checked = !!s.runningHeader;
+    document.getElementById("selPageNum").value = s.pageNum || "from1";
+  }
+}
+function readSettingsInputs(){
+  const s = project.settings;
+  const pg = document.getElementById("selPage").value.split("x");
+  s.pageW = parseFloat(pg[0]); s.pageH = parseFloat(pg[1]);
+  s.fontPt = clampNum(document.getElementById("inFont").value, 8, 18, 12);
+  s.lineSpacing = parseFloat(document.getElementById("selLine").value) || 1.5;
+  s.indentCm = clampNum(document.getElementById("inIndent").value, 0, 3, 0);
+  s.margTop = clampNum(document.getElementById("inMT").value, 0, 6, 2.54);
+  s.margBottom = clampNum(document.getElementById("inMB").value, 0, 6, 2.54);
+  s.margLeft = clampNum(document.getElementById("inML").value, 0, 6, 2.54);
+  s.margRight = clampNum(document.getElementById("inMR").value, 0, 6, 2.54);
+  s.profile = "custom";
+  document.getElementById("pfManu").classList.remove("on");
+  document.getElementById("pfBook").classList.remove("on");
+  { const eb = document.getElementById("pfEbook"); if(eb) eb.classList.remove("on"); }
+  updateExportButtons();
+  applyPreview(); saveProject();
+}
+function updateExportButtons(){
+  const eb = currentProfileIsEbook();
+  const b1 = document.getElementById("dl1"), ball = document.getElementById("dlall");
+  if(b1) b1.textContent = eb ? t("dlChapterHtml") : t("dlChapter");
+  if(ball) ball.textContent = eb ? t("dlAllHtml") : t("dlAll");
+  const bepub = document.getElementById("dlepub"); if(bepub) bepub.style.display = eb ? "" : "none";
+  const note = document.getElementById("ebookNote"); if(note) note.style.display = eb ? "block" : "none";
+  const bnote = document.getElementById("bookNote"); if(bnote) bnote.style.display = currentProfileIsBook() ? "block" : "none";
+}
+function clampNum(v, min, max, def){ let n = parseFloat(v); if(isNaN(n)) n = def; return Math.min(max, Math.max(min, n)); }
+function changePageSize(){
+  const s = project.settings;
+  const pg = document.getElementById("selPage").value.split("x");
+  s.pageW = parseFloat(pg[0]); s.pageH = parseFloat(pg[1]);
+  applyPreview(); saveProject();
+}
+function applyProfile(name){
+  const s = project.settings;
+  const keep = { author:s.author, manuscriptTitle:s.manuscriptTitle, contact:s.contact, titlePage:s.titlePage, runningHeader:s.runningHeader, pageNum:s.pageNum };
+  const P = (LANG === "en") ? enPresets() : PRESETS;
+  project.settings = Object.assign({profile:name}, P[name], keep);
+  fillSettingsInputs(); applyPreview(); saveProject();
+}
+
+/* ===================== POMOCNICZE ===================== */
+function filename(title, header){
+  const base = (title ? slug(title) + "_" : "") + slug(header || "chapter");
+  return (base || "manuscript") + ".docx";
+}
+function slug(s){
+  const map={"ą":"a","ć":"c","ę":"e","ł":"l","ń":"n","ó":"o","ś":"s","ż":"z","ź":"z","Ą":"A","Ć":"C","Ę":"E","Ł":"L","Ń":"N","Ó":"O","Ś":"S","Ż":"Z","Ź":"Z"};
+  s = (s||"").replace(/[ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]/g, m=>map[m]);
+  s = s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"");
+  s = s.replace(/[^A-Za-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+  return s;
+}
+let toastT;
+function toast(msg){
+  const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(()=>el.classList.remove("show"), 3000);
+}
+function confirmModal(message){
+  return new Promise(resolve=>{
+    const modal = document.getElementById("confirmModal");
+    document.getElementById("confirmMsg").textContent = message;
+    const ok = document.getElementById("confirmOk"), cancel = document.getElementById("confirmCancel");
+    let done = false;
+    const finish = (val)=>{
+      if(done) return; done = true;
+      modal.classList.remove("show");
+      ok.removeEventListener("click", onOk); cancel.removeEventListener("click", onCancel);
+      modal.removeEventListener("click", onBackdrop); document.removeEventListener("keydown", onKey);
+      resolve(val);
+    };
+    const onOk = ()=>finish(true);
+    const onCancel = ()=>finish(false);
+    const onBackdrop = e=>{ if(e.target===modal) finish(false); };
+    const onKey = e=>{ if(e.key==="Escape") finish(false); else if(e.key==="Enter"){ e.preventDefault(); finish(true); } };
+    ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
+    modal.addEventListener("click", onBackdrop); document.addEventListener("keydown", onKey);
+    modal.classList.add("show"); ok.focus();
+  });
+}
+async function clearActive(){
+  const ch = activeChapter(); if(!ch) return;
+  if((ch.text && ch.text.trim()) && !(await confirmModal(t("cfClear")))) return;
+  ch.text=""; ch.html=""; ch.title=""; ch.filename="";
+  document.getElementById("src").value=""; document.getElementById("title").value="";
+  const page = document.getElementById("page");
+  page.innerHTML = emptyPageHTML();
+  page.setAttribute("contenteditable","false");
+  document.getElementById("dl1").disabled = true;
+  document.getElementById("dlall").disabled = !project.chapters.some(c=>c.html || (c.text&&c.text.trim()));
+  document.getElementById("fname").textContent = "";
+  document.getElementById("stats").classList.remove("show");
+  refreshList(); updateBasicStats(); saveProject(); document.getElementById("src").focus();
+}
+
+/* ===================== IMPORT PLIKÓW ===================== */
+function handleFile(f){
+  if(!f) return;
+  const name = (f.name || "").toLowerCase();
+  if(name.endsWith(".txt") || name.endsWith(".md") || (f.type && f.type.startsWith("text/"))){
+    const fr = new FileReader();
+    fr.onload = ()=>{ document.getElementById("src").value = fr.result; render(); };
+    fr.readAsText(f, "utf-8"); return;
+  }
+  if(name.endsWith(".docx")){
+    if(!window.mammoth){ toast(t("tDocxNeedsNet")); return; }
+    toast(t("tLoadingDocx"));
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      window.mammoth.extractRawText({arrayBuffer: fr.result})
+        .then(r=>{ document.getElementById("src").value = (r.value || "").replace(/\n{3,}/g,"\n\n").trim(); render(); toast("Wczytano .docx"); })
+        .catch(e=>{ console.error(e); toast(t("tDocxReadFail")); });
+    };
+    fr.readAsArrayBuffer(f); return;
+  }
+  if(name.endsWith(".pdf")){
+    if(!window.pdfjsLib){ toast(t("tPdfNeedsNet")); return; }
+    toast(t("tLoadingPdf"));
+    const fr = new FileReader();
+    fr.onload = ()=>{ extractPdfText(fr.result); };
+    fr.readAsArrayBuffer(f); return;
+  }
+  if(name.endsWith(".doc")){
+    toast(t("tDocUnsupported")); return;
+  }
+  toast(t("tFileUnsupported"));
+}
+async function extractPdfText(arrayBuffer){
+  try{
+    const pdf = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
+    let out = [];
+    for(let i=1;i<=pdf.numPages;i++){
+      const page = await pdf.getPage(i);
+      const tc = await page.getTextContent();
+      let line = "", lastY = null, lines = [];
+      tc.items.forEach(it=>{
+        const y = it.transform[5];
+        if(lastY !== null && Math.abs(y - lastY) > 2){ lines.push(line.trim()); line = ""; }
+        line += it.str + (it.hasEOL ? " " : "");
+        lastY = y;
+      });
+      if(line.trim()) lines.push(line.trim());
+      out.push(lines.join("\n"));
+    }
+    // proste sklejanie: łączymy linie w akapity tam, gdzie nie kończą się kropką
+    const raw = out.join("\n");
+    document.getElementById("src").value = raw.replace(/\n{3,}/g,"\n\n").trim();
+    render();
+    toast(t("tPdfLoaded"));
+  }catch(e){ console.error(e); toast(t("tPdfReadFail")); }
+}
+
+/* ===================== KOPIA ZAPASOWA PROJEKTU ===================== */
+function exportProject(){
+  try{
+    saveAnyBlob(new Blob([JSON.stringify(project)], {type:"application/json"}), "manuscript_project.json");
+    toast(t("tProjSaved"));
+  }catch(e){ console.error(e); toast(t("tProjSaveFail")); }
+}
+function importProject(file){
+  if(!file) return;
+  const fr = new FileReader();
+  fr.onload = async ()=>{
+    try{
+      const p = JSON.parse(fr.result);
+      if(!p || !Array.isArray(p.chapters) || !p.chapters.length){ toast(t("tNotProjectFile")); return; }
+      if(!(await confirmModal(t("cfImport")))) return;
+      project = p;
+      if(!project.settings) project.settings = defaultSettings();
+      { const sd = defaultSettings(); for(const k in sd){ if(project.settings[k] === undefined) project.settings[k] = sd[k]; } }
+      if(!activeChapter()) project.activeId = project.chapters[0].id;
+      applyPreview(); fillSettingsInputs(); loadActiveIntoUI(); refreshList(); updateBasicStats(); saveProject();
+      toast("Wczytano projekt");
+    }catch(e){ console.error(e); toast(t("tBadProjectFile")); }
+  };
+  fr.readAsText(file, "utf-8");
+}
+
+/* ===================== STRONA TYTUŁOWA / WYSYŁKA ===================== */
+function roundWords(n){
+  const loc = (LANG==="en") ? "en-US" : "pl-PL";
+  if(n >= 2000) return (Math.round(n/1000)*1000).toLocaleString(loc);
+  if(n >= 200)  return (Math.round(n/100)*100).toLocaleString(loc);
+  return n.toLocaleString(loc);
+}
+function headerSurname(author){ const t = (author||"").trim().split(/\s+/).filter(Boolean); return t.length ? t[t.length-1] : ""; }
+function headerKeyword(title){
+  const skip = new Set(["a","i","o","u","w","z","the","się","na","do","po","za","od"]);
+  const t = (title||"").trim().split(/\s+/).filter(Boolean);
+  for(const w of t){ if(!skip.has(w.toLowerCase())) return w.toUpperCase(); }
+  return (t[0]||"").toUpperCase();
+}
+function buildTitlePageParas(s, totalWords){
+  const out = [];
+  const author = (s.author||"").trim();
+  const title = (s.manuscriptTitle||"").trim() || ((LANG==="en") ? "Untitled" : "Bez tytułu");
+  const contactLines = (s.contact||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(author) out.push({type:'tp', align:'left', runs:[{text:author, italic:false}]});
+  contactLines.forEach(l=> out.push({type:'tp', align:'left', runs:[{text:l, italic:false}]}));
+  out.push({type:'tp', align:'right', runs:[{text:((LANG==="en") ? ("approximately " + roundWords(totalWords) + " words") : ("około " + roundWords(totalWords) + " słów")), italic:false}]});
+  for(let i=0;i<10;i++) out.push({type:'tpgap'});
+  out.push({type:'tp', align:'center', runs:[{text:title, italic:false}]});
+  out.push({type:'tpgap'});
+  if(author) out.push({type:'tp', align:'center', runs:[{text:author, italic:false}]});
+  return out;
+}
+
+/* ===================== POWTÓRZENIA / CZĘSTOŚĆ SŁÓW ===================== */
+const PL_STOP = new Set("a aby ach acz albo ale ależ ani aż bardzo bez bo bowiem by byli bym był była było były będzie będą cala cała cały chce choć ci cię ciebie co coś czy czyli daleko dla dlaczego dlatego do dobrze dokąd dość dużo dwa dwaj dwie dwoje dziś dzisiaj gdy gdyby gdyż gdzie gdziekolwiek go i ich ile im inne inny innych iż ja jak jakby jaki jakie jako jakoś je jeden jedna jedno jednak jego jej jemu jest jestem jeszcze jeśli jeżeli już ją każdy kiedy kilka kto ktokolwiek ktoś która które którego której który których którym którzy ku lat lecz lub ma mają mam mamy mi mimo między mnie mną mogą moi moja moje może możliwe można mu musi my na nad nam nami nas nasi nasz nasza nasze naszego naszych natomiast nawet nią nic nich nie niej nigdy nim nimi niż no nowa o obok od około on ona one oni ono oraz oto owszem pan pana pani po pod podczas pomimo ponad ponieważ poza prawie przecież przed przede przedtem przez przy raz razie roku również sam sama są się skąd sobie sobą sposób sposób swoje ta tak taka taki takie także tam te tego tej temu ten teraz też to tobie tobą toteż trzeba tu tutaj twoi twoja twoje twój ty tych tylko tym tę u w we wam wami was wasi wasz wasza wasze wciąż wedle według wiele wielu więc więcej wszyscy wszystkich wszystkie wszystkim wszystko wtedy wy właśnie z za zapewne zawsze ze znowu znów został żaden żadna żadne żadnych że żeby".split(/\s+/));
+const PL_SUF = ["ościach","ościami","ościom","liście","łyście","liśmy","łyśmy",
+  "ego","emu","ych","ymi","imi","iej","iom","iami","iach","ami","ach","owi","ość",
+  "ący","ąca","ące","ało","ała","ały","ali","eli","iło","iła","ili","yło","yła","yli",
+  "nia","niu","ona","one","ony","ane","ana","any","anie","enie",
+  "em","ów","ie","ał","ił","ył","ła","ło","ły","li","ać","eć","ić","yć","ją","ję"].sort((a,b)=>b.length-a.length);
+const PL_VOW = /[aeiouyąęó]$/;
+function plStem(w){
+  let s = w.toLowerCase();
+  for(const x of PL_SUF){ if(s.length - x.length >= 3 && s.endsWith(x)) return s.slice(0, s.length - x.length); }
+  if(s.length >= 4 && PL_VOW.test(s)) return s.slice(0, -1);
+  return s;
+}
+function repWord(surfMap){ return Object.keys(surfMap).sort((a,b)=>surfMap[b]-surfMap[a])[0]; }
+function escHtml(s){ return String(s).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function analyzeRepetition(){
+  const ch = activeChapter();
+  const text = ch ? (ch.text||"") : "";
+  const tokens = (text.toLowerCase().match(/[a-ząćęłńóśżź]+/g) || []);
+  const freq = {}, surf = {}, positions = {};
+  const STOP = (LANG==="en") ? EN_STOP : PL_STOP;
+  const stemFn = (LANG==="en") ? enStem : plStem;
+  let idx = 0;
+  tokens.forEach(tok=>{
+    idx++;
+    if(tok.length < 3 || STOP.has(tok)) return;
+    const st = stemFn(tok);
+    freq[st] = (freq[st]||0) + 1;
+    surf[st] = surf[st] || {}; surf[st][tok] = (surf[st][tok]||0) + 1;
+    (positions[st] = positions[st] || []).push(idx);
+  });
+  const top = Object.keys(freq).filter(k=>freq[k] >= 2).sort((a,b)=>freq[b]-freq[a]).slice(0, 25)
+    .map(k=>({ word: repWord(surf[k]), count: freq[k], stem: k }));
+  const WIN = 45, echoes = [];
+  Object.keys(positions).forEach(k=>{
+    const ps = positions[k]; if(ps.length < 2) return;
+    let best = Infinity;
+    for(let i=1;i<ps.length;i++) best = Math.min(best, ps[i]-ps[i-1]);
+    if(best <= WIN) echoes.push({ word: repWord(surf[k]), dist: best, count: ps.length, stem: k });
+  });
+  echoes.sort((a,b)=>a.dist-b.dist);
+  // początki zdań (pierwsze słowo każdego zdania)
+  const ob = sentenceBoundaries(text); const oss = []; let osi = 0;
+  ob.forEach(c=>{ oss.push([osi, c]); osi = c; });
+  if(osi < text.length) oss.push([osi, text.length]);
+  const opCount = {}, opSurf = {};
+  oss.forEach(([s,e])=>{
+    const mm = text.slice(s, e).match(/[a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ]+/);
+    if(!mm) return;
+    const lw = mm[0].toLowerCase();
+    opCount[lw] = (opCount[lw]||0) + 1;
+    if(!opSurf[lw]) opSurf[lw] = mm[0];
+  });
+  const openings = Object.keys(opCount).filter(k=>opCount[k] >= 3).sort((a,b)=>opCount[b]-opCount[a]).slice(0, 15)
+    .map(k=>({ word: opSurf[k], count: opCount[k], lw: k }));
+  renderRepetition(top, echoes.slice(0, 30), openings, tokens.length);
+}
+function plZdania(n){ const a = n % 10, b = n % 100; if(n === 1) return "zdanie"; if(a >= 2 && a <= 4 && !(b >= 12 && b <= 14)) return "zdania"; return "zdań"; }
+function renderRepetition(top, echoes, openings, total){
+  const box = document.getElementById("freqbox");
+  if(!total){ box.innerHTML = '<p class="hint">' + t("rNoText") + '</p>'; return; }
+  const tip1 = '<span class="freqtip">' + t("rClickHi") + '</span>';
+  const tip2 = '<span class="freqtip">' + t("rClickHi2") + '</span>';
+  let h = '<div class="freqsec"><div class="freqh">' + t("rTopWords") + ' ' + tip1 + '</div>';
+  h += top.length ? '<div class="chips">' + top.map(t=>'<span class="chip" role="button" tabindex="0" data-stem="'+escHtml(t.stem)+'" data-label="'+escHtml(t.word)+'">'+escHtml(t.word)+' <b>'+t.count+'</b></span>').join('') + '</div>'
+                  : '<p class="hint">' + t("rNoRepeat") + '</p>';
+  h += '</div><div class="freqsec"><div class="freqh">' + t("rEchoes") + ' ' + tip1 + '</div>';
+  h += echoes.length ? '<ul class="echoes">' + echoes.map(e=>'<li role="button" tabindex="0" data-stem="'+escHtml(e.stem)+'" data-label="'+escHtml(e.word)+'"><span>'+escHtml(e.word)+'</span><span class="dist">'+e.dist+' '+t("rApart")+(e.count>2?' · '+e.count+'×':'')+'</span></li>').join('') + '</ul>'
+                     : '<p class="hint">' + t("rNoEcho") + '</p>';
+  h += '</div><div class="freqsec"><div class="freqh">' + t("bOpenings") + ' ' + tip2 + '</div>';
+  h += openings.length ? '<ul class="openings">' + openings.map(o=>'<li role="button" tabindex="0" data-open="'+escHtml(o.lw)+'" data-label="'+escHtml(o.word)+'"><span>'+escHtml(o.word)+'</span><span class="dist">'+o.count+' '+((LANG==="en")?(o.count===1?"sentence":"sentences"):plZdania(o.count))+'</span></li>').join('') + '</ul>'
+                       : '<p class="hint">' + t("rNoOpeners") + '</p>';
+  h += '</div><p class="hint">' + t("rFootnote") + '</p>';
+  box.innerHTML = h;
+  updateChipActive();
+}
+
+/* ===================== WYKRES DŁUGOŚCI ZDAŃ ===================== */
+function splitSentences(text){
+  const t = (text||"").trim(); if(!t) return [];
+  const b = sentenceBoundaries(t); const segs = []; let s = 0;
+  b.forEach(e=>{ segs.push(t.slice(s, e)); s = e; });
+  if(s < t.length) segs.push(t.slice(s));
+  return segs.map(x=>(x.match(/\S+/g)||[]).length).filter(n=>n>0);
+}
+function renderSparkline(){
+  const box = document.getElementById("sparkbox");
+  if(!box) return;
+  const page = document.getElementById("page");
+  let txt = "";
+  page.querySelectorAll("p.body, p.first").forEach(p=>{ txt += p.textContent + " "; });
+  const lens = splitSentences(txt);
+  if(!lens.length){ box.innerHTML = '<span class="sparkempty">—</span>'; return; }
+  const W = 340, H = 46, n = lens.length, gap = n > 120 ? 0 : 1;
+  const bw = Math.max(1, (W - (n-1)*gap) / n);
+  const cap = 60, maxL = Math.min(cap, Math.max(12, Math.max.apply(null, lens)));
+  let bars = "";
+  lens.forEach((L,i)=>{
+    const h = Math.max(2, Math.round((Math.min(L, cap) / maxL) * (H - 6)));
+    const x = (i*(bw+gap)).toFixed(2), y = (H - h).toFixed(2);
+    const col = L <= AN_S_SHORT ? "#e0a64a" : (L >= AN_S_LONG ? "#2e6aa3" : "#6b7d8e");
+    bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(2)+'" height="'+h+'" fill="'+col+'"><title>'+L+' '+t("rWordsAbbr")+'</title></rect>';
+  });
+  box.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="none">'+bars+'</svg>';
+}
+
+/* ===================== USTAWIENIA WYSYŁKI (odczyt) ===================== */
+function readSubmissionInputs(){
+  const s = project.settings;
+  s.author = document.getElementById("inAuthor").value;
+  s.manuscriptTitle = document.getElementById("inMsTitle").value;
+  s.contact = document.getElementById("inContact").value;
+  s.titlePage = document.getElementById("ckTitlePage").checked;
+  s.runningHeader = document.getElementById("ckHeader").checked;
+  s.pageNum = document.getElementById("selPageNum").value;
+  saveProject();
+}
+
+/* ===================== JĘZYK / I18N (nakładka EN) ===================== */
+let LANG = "pl";
+function getInitialLang(){ return "en"; }   // wersja angielska — bez przełączania, bez powrotu do PL
+let VARIANT = "us";
+function getInitialVariant(){ try{ const s = localStorage.getItem("akapitly_variant"); if(s==="us"||s==="uk") return s; }catch(e){} return "us"; }
+function syncVariantUI(){
+  const row = document.getElementById("variantRow");
+  if(row) row.style.display = (LANG==="en") ? "" : "none";
+  const u = document.getElementById("vUS"), k = document.getElementById("vUK");
+  if(u) u.classList.toggle("on", VARIANT==="us");
+  if(k) k.classList.toggle("on", VARIANT==="uk");
+}
+function setVariant(v){
+  VARIANT = (v==="uk") ? "uk" : "us";
+  try{ localStorage.setItem("akapitly_variant", VARIANT); }catch(e){}
+  syncVariantUI();
+  if(LANG === "en" && typeof applyProfile === "function") applyProfile((project.settings && project.settings.profile) || "maszynopis");
+  if(LANG === "en" && typeof render === "function") render();
+}
+const STR = {
+  themeLight:{pl:"Jasny", en:"Light"},
+  themeDark:{pl:"Ciemny", en:"Dark"},
+  savedAt:{pl:"ostatni zapis", en:"last saved"},
+  savedTick:{pl:"Zapisano ✓ · ", en:"Saved ✓ · "},
+  dlChapter:{pl:"Pobierz rozdział", en:"Download chapter"},
+  dlChapterHtml:{pl:"Pobierz rozdział (HTML)", en:"Download chapter (HTML)"},
+  dlAll:{pl:"Pobierz całość", en:"Download all"},
+  dlAllHtml:{pl:"Pobierz e-book (HTML)", en:"Download e-book (HTML)"},
+  emptyPage:{
+    pl:"Wklej tekst po lewej albo wczytaj plik, potem kliknij „Formatuj”. Format — Manuskrypt, Książka do druku lub e-Book — wybierzesz w panelu „Format dokumentu”.",
+    en:"Paste your text on the left or load a file, then click “Format”. Choose the format — Manuscript, Print book or e-Book — in the “Document format” panel."
+  },
+  cfDeleteChapter:{pl:"Usunąć ten rozdział? Tej operacji nie można cofnąć.", en:"Delete this chapter? This cannot be undone."},
+  cfClear:{pl:"Wyczyścić tekst i podgląd tego rozdziału?", en:"Clear the text and preview of this chapter?"},
+  cfImport:{pl:"Wczytać projekt z pliku? Zastąpi to bieżącą pracę w przeglądarce.", en:"Load a project from file? This will replace your current work in the browser."},
+  tSaved:{pl:"Zapisano projekt", en:"Project saved"},
+  tSaveErr:{pl:"Nie udało się zapisać", en:"Couldn’t save"},
+  tChapterDeleted:{pl:"Rozdział usunięty", en:"Chapter deleted"},
+  tNoContent:{pl:"Brak treści do eksportu", en:"Nothing to export"},
+  tGotChapterHtml:{pl:"Pobrano rozdział (HTML)", en:"Chapter downloaded (HTML)"},
+  tGotEbookHtml:{pl:"Pobrano e-book (HTML) — gotowy do Calibre", en:"E-book downloaded (HTML) — ready for Calibre"},
+  tEpubNeedsNet:{pl:"EPUB wymaga połączenia z internetem (biblioteka .zip)", en:"EPUB needs an internet connection (.zip library)"},
+  tEpubFail:{pl:"Nie udało się utworzyć EPUB", en:"Couldn’t create the EPUB"},
+  tDocxErrRtf:{pl:"Błąd .docx — pobieram RTF zamiast tego", en:".docx error — downloading RTF instead"},
+  tDocxNoLibRtf:{pl:"Biblioteka .docx nie wczytała się (brak sieci?) — pobieram RTF", en:".docx library didn’t load (offline?) — downloading RTF"},
+  tDocxNeedsNet:{pl:"Import .docx wymaga połączenia z internetem (biblioteka się nie wczytała)", en:"Importing .docx needs an internet connection (library didn’t load)"},
+  tLoadingDocx:{pl:"Wczytuję .docx…", en:"Loading .docx…"},
+  tDocxReadFail:{pl:"Nie udało się odczytać tego .docx", en:"Couldn’t read this .docx"},
+  tPdfNeedsNet:{pl:"Import PDF wymaga połączenia z internetem (biblioteka się nie wczytała)", en:"Importing PDF needs an internet connection (library didn’t load)"},
+  tLoadingPdf:{pl:"Wczytuję PDF (struktura akapitów bywa przybliżona)…", en:"Loading PDF (paragraph structure may be approximate)…"},
+  tDocUnsupported:{pl:"Stary format .doc nie jest obsługiwany — zapisz w Wordzie jako .docx", en:"The old .doc format isn’t supported — save it as .docx in Word"},
+  tFileUnsupported:{pl:"Nieobsługiwany format pliku", en:"Unsupported file format"},
+  tPdfLoaded:{pl:"Wczytano PDF — sprawdź podział akapitów, bywa przybliżony", en:"PDF loaded — check the paragraph breaks, they can be approximate"},
+  tProjSaved:{pl:"Zapisano kopię projektu (.json)", en:"Project backup saved (.json)"},
+  tChAbbr:{pl:"rozdz.", en:"ch."},
+  tTitlePage:{pl:"strona tytułowa", en:"title page"},
+  tBook:{pl:"Książka", en:"Book"},
+  tAll:{pl:"Całość", en:"All chapters"},
+  tPdfReadFail:{pl:"Nie udało się odczytać tego PDF", en:"Couldn’t read this PDF"},
+  tProjSaveFail:{pl:"Nie udało się zapisać projektu", en:"Couldn’t save the project"},
+  tNotProjectFile:{pl:"To nie wygląda na plik projektu", en:"This doesn’t look like a project file"},
+  tBadProjectFile:{pl:"Błędny plik projektu (.json)", en:"Invalid project file (.json)"},
+  bHi:{pl:"Podświetlono", en:"Highlighting"},
+  bMatches:{pl:"wyst.", en:"matches"},
+  bEdit:{pl:"możesz edytować", en:"you can keep editing"},
+  bOpenings:{pl:"Początki zdań", en:"Sentence openers"},
+  rNoText:{pl:"Brak tekstu w tym rozdziale.", en:"No text in this chapter."},
+  rTopWords:{pl:"Najczęstsze słowa", en:"Most frequent words"},
+  rClickHi:{pl:"(kliknij, aby podświetlić w tekście)", en:"(click to highlight in the text)"},
+  rNoRepeat:{pl:"Brak słów powtórzonych ≥2 razy.", en:"No words repeated ≥2 times."},
+  rEchoes:{pl:"Echa", en:"Echoes"},
+  rApart:{pl:"sł. od siebie", en:"words apart"},
+  rNoEcho:{pl:"Nie znaleziono bliskich powtórzeń (okno 45 słów).", en:"No close repetitions found (45-word window)."},
+  rClickHi2:{pl:"(kliknij, aby podświetlić)", en:"(click to highlight)"},
+  rNoOpeners:{pl:"Brak początków zdań powtórzonych ≥3 razy.", en:"No sentence openers repeated ≥3 times."},
+  rFootnote:{pl:"Grupowanie odmian jest przybliżone. „Początki zdań” podświetlają tylko pierwsze słowo zdania. Liczone razem narracja i dialogi tego rozdziału.", en:"Inflection grouping is approximate. “Sentence openers” highlight only the first word of a sentence. Narrative and dialogue in this chapter are counted together."},
+  rWordsAbbr:{pl:"sł.", en:"w."},
+  bSentLen:{pl:"Podświetlanie długości zdań", en:"Highlighting sentence length"},
+  bDetox:{pl:"Detoks AI — kandydaci do sprawdzenia (nie błędy)", en:"AI Detox — candidates to check (not errors)"},
+  bNoise:{pl:"Wskaźnik szumu", en:"Noise meter"},
+  bNoiseWords:{pl:"słów (kandydaci, nie błędy)", en:"of words (candidates, not errors)"},
+  chapterWord:{pl:"Rozdział", en:"Chapter"},
+  tocTitle:{pl:"Spis treści", en:"Contents"}
+};
+function t(k){ const o = STR[k]; return o ? (o[LANG]||o.pl) : k; }
+function docLang(){ return (LANG==="en") ? (VARIANT==="uk"?"en-GB":"en-US") : "pl"; }
+function emptyPageHTML(){ return '<p class="empty">' + t("emptyPage") + '</p>'; }
+const EN_HTML = {
+  mgP1: `Akapitly is a manuscript editor designed for a larger screen and a keyboard. On a phone or tablet the page <b>works correctly</b>, but writing will be uncomfortable.`,
+  mgP2: `For the full experience, open <b>akapitly.com</b> on a laptop or desktop computer.`,
+  hintLoad: `File: .txt, .md, .docx and (experimentally) .pdf. Save an old .doc as .docx first. “Format” refreshes the preview.`,
+  fmtHint: `The profile sets a sensible starting point — you can change any value afterward. The font stays Times New Roman.`,
+  legendSub: `AI Detox and the Noise meter flag <b>candidates to check, not errors</b> — they detect patterns mechanically, without understanding the content, so false positives happen. The Noise meter also shows the <b>% of words</b> counted as noise. Full description of the rules: the <b>Info</b> tab. “Sentence length”, “AI Detox”, “Noise meter” and word highlighting can be edited live; “Clear highlight” removes them.`,
+  ebookNote: `Profile <b>e-Book</b>: <b>Download EPUB</b> builds a ready <b>.epub</b> file (EPUB 3, with a table of contents and chapter breaks); <b>Download e-book</b> gives a reflowable <b>.html</b> for conversion in Calibre. Chapter titles go into <b>&lt;h1&gt;</b>; hard spaces revert to normal. The page-geometry settings below don't apply here.`,
+  bookNote: `Profile <b>Print book</b>: DOCX export with <b>mirror margins</b> (≈0.375″ inner gutter for binding), <b>hyphenation</b> (en-US / en-GB) and <b>widow/orphan</b> control; body text is <b>justified</b>. Akapitly doesn't insert page numbers — add them in your editor (Word / Google Docs: <b>Insert → Page numbers</b>). Manually changing the margins or font switches the profile to “custom” and turns these rules off.`,
+  helpBody: `<h3>In short</h3>
+      <ol>
+        <li>Paste your text in the box on the left (or <b>Load file</b>: .txt, .md, .docx, .pdf).</li>
+        <li>Click <b>Format</b> — Akapitly applies manuscript typography (US or UK).</li>
+        <li>Review the <b>rhythm analysis</b> and <b>repetition</b> in the panels on the right.</li>
+        <li>Fill in the <b>title page and submission</b> details if you're compiling the whole thing.</li>
+        <li>Click <b>Download all</b> (or a single chapter).</li>
+      </ol>
+      <h3>Chapters</h3>
+      <p>The left column is the chapter list. <b>+ Chapter</b> adds a new one; click to switch between them. Each chapter has its own title; the “starts a new heading” option places the chapter name at the top. Text is saved automatically in this browser.</p>
+      <h3>Pasting and import</h3>
+      <p>Easiest: paste text into the box on the left. <b>Load file</b> handles .txt, .md, .docx and .pdf — the content goes into the active chapter. .docx/.pdf import uses libraries fetched from the web, so it only works online.</p>
+      <h3>Formatting and profiles</h3>
+      <p><b>Format</b> applies standard manuscript typography. Pick <b>US</b> or <b>UK</b> at the top of the Format panel — it sets the quotation marks and dashes: US uses curly double quotes <b>“ ”</b> and a closed em-dash (—); UK uses single quotes <b>‘ ’</b> and a spaced en-dash (–). It also fixes the ellipsis (…), number ranges (1939–1945), removes spaces before punctuation, leaves the first paragraph un-indented and marks scene breaks with <b>#</b>. Choose a profile: <b>Manuscript</b> (Letter/A4, for agents and publishers), <b>Print book</b> (6×9″ or B-format) or <b>e-Book</b> (reflowable); adjust font, line spacing and margins if needed.</p>
+      <h3>Rhythm analysis</h3>
+      <p>Three highlight modes above the text:</p>
+      <ol>
+        <li><b>Paragraph length</b> — flags short, choppy runs and very long paragraphs.</li>
+        <li><b>Sentences per paragraph</b> — shows 1- and 2-sentence paragraphs.</li>
+        <li><b>Sentence length</b> — colours individual sentences (short / long). In this mode you can <b>keep editing</b> — the highlight refreshes after a moment and the cursor stays put.</li>
+      </ol>
+      <p>There's also a chart of consecutive sentence lengths on the side. <span class="note">This is a mechanical measure (length and sentence count), not a judgement of content — a short or single-sentence paragraph can be a deliberate beat.</span></p>
+      <h3>AI Detox</h3>
+      <p>Next to the rhythm modes is <b>AI Detox</b> — it highlights common “machine-style” tells: overused words and buzzwords, description by negation (“not …, but/rather”), moralizing paragraph endings, and symmetrical triads. Turn it on with the <b>AI Detox</b> button above the text; highlights refresh as you write, you can type around them, and <b>Clear highlight</b> removes them. <span class="note">These are <b>candidates to check, not errors</b> — it works on patterns, without sending your text to any AI. Full rules and limitations are in the <a href="#" id="helpToInfo">Info tab</a>.</span></p>
+      <p>Next to it is the <b>Noise meter</b> — it highlights filler words (that, which, very, just…) and the weak verb “to be”, and shows the <b>% of words</b> counted as noise at the top. Also pattern-based, also <b>candidates, not errors</b> (details in Info).</p>
+      <h3>Repetition and word frequency</h3>
+      <p>The <b>Repetition and word frequency</b> panel → <b>Analyse repetition</b>: shows the most frequent words (grouping inflections, e.g. walk/walking/walked), echoes — the same word close together — and <b>sentence openers</b>, the words many sentences start with (a common snag: “And…”, “Then…”, “He…”). <b>Click</b> a word or echo to highlight all its occurrences; clicking a sentence opener highlights <b>only the first word</b> of the matching sentences. Inflection grouping is approximate.</p>
+      <h3>Title page, running head, page numbers</h3>
+      <p>The <b>Title page and submission</b> panel (applies to “Download all”): enter author, title and contact. You can enable a title page, a running head (surname / title in the header) and choose <b>page numbers</b>: from page 1, from page 2 or none. <span class="note">Page numbers from a .docx import show in Word/LibreOffice; Google Docs may not display them — in that case add them via Insert → Page numbers.</span></p>
+      <h3>Export</h3>
+      <p><b>Download chapter</b> saves the current chapter, <b>Download all</b> — everything together, as a <b>.docx</b> file (when offline it saves RTF, which Word also opens). <span class="note">The preview in Akapitly is a continuous view and deliberately <b>does not split the text into pages</b> — that's normal. Pagination happens in the target program (Word, LibreOffice, Google Docs, a reader) after export, where the document looks correct.</span></p>
+      <p>In the <b>e-Book</b> profile, <b>Download EPUB</b> saves a ready <b>.epub</b> file (EPUB 3 with an interactive table of contents, chapter breaks and an NCX for older readers). <b>Download chapter / e-book</b> instead create a reflowable <b>.html</b> ready for conversion in <b>Calibre</b>: chapter titles in &lt;h1&gt;, an automatic linked table of contents, a page break before each chapter, hard spaces turned back into normal ones (so the text scales well on readers). <span class="note">It's worth checking the EPUB in a reader or in Calibre before sending.</span></p>
+      <p>In the <b>Print book</b> profile, the DOCX export adds typesetting rules: mirror margins (≈0.375″ inner gutter for binding), hyphenation (en-US/en-GB) and widow/orphan control; body text is justified. <span class="note"><b>Page numbering is out of scope</b> — add numbers yourself in your editor (Word/Google Docs: <b>Insert → Page numbers</b>) or at the PDF stage.</span></p>
+      <h3>Backup and saving</h3>
+      <p>Your work is saved <b>in this browser</b>. Below the chapter list you have <b>Save project</b> (the whole project to a .json file) and <b>Load project</b>. <span class="note">Clearing browser data or private mode means losing the save — back up regularly and keep the .json file yourself.</span></p>`,
+  infoBody: `<h3>Security and privacy</h3>
+      <p>Akapitly is a single file running in your browser — a bit like a calculator: it computes and formats on your device. <b>Your text is never sent anywhere.</b> There's no server, no account and no login; what you write stays on your computer (saved in this browser's storage).</p>
+      <p>The internet is only needed to load a few ready-made helper tools once — for opening .docx and .pdf files and for saving .docx and EPUB. Once downloaded they work locally and don't send your text anywhere.</p>
+      <p class="note">Clearing browser data or private mode erases the save — so back up regularly (the <b>Save project</b> button) and keep the .json file yourself.</p>
+      <h3>The program is free</h3>
+      <p>Akapitly is and will remain <b>completely free</b> — no fees and no limits.</p>
+      <h3>Pages and numbering</h3>
+      <p>The preview on the right is one <b>continuous view</b> and deliberately doesn't split the text into pages — that's normal, not a bug. Pagination only appears after export, in the target program (Word, LibreOffice, Google Docs or an e-book reader), where the document looks correct.</p>
+      <p>Akapitly doesn't insert page numbers. It's safest to add them on the spot — in your editor (<b>Insert → Page numbers</b>) or when creating a PDF. Different programs handle numbers carried over from a file differently, so doing it yourself gives a reliable result.</p>
+      <h3>Automatic rules (the “Format” button)</h3>
+      <p>When you click <b>Format</b>, Akapitly tidies the text according to manuscript conventions. The same rules apply in every profile (the <b>US/UK</b> switch sets the quotation marks and dash style):</p>
+      <ul>
+        <li>curly quotation marks — US double <b>“ ”</b>, UK single <b>‘ ’</b> — with a proper apostrophe (’);</li>
+        <li>dashes — US a closed em-dash (—) from -- or a spaced hyphen; UK a spaced en-dash (–);</li>
+        <li>ellipsis as a single character “…”;</li>
+        <li>number ranges with an en-dash, no spaces (1939–1945);</li>
+        <li>removing spaces before . , ? ! : ; and collapsing double spaces;</li>
+        <li>first paragraph without indent, scene break as #.</li>
+      </ul>
+      <p class="note">The English version does <b>not</b> add hard spaces and does not turn dialogue into dashes — English fiction uses quotation marks for speech.</p>
+      <h3>How the profiles differ</h3>
+      <p>The punctuation rules are identical everywhere — profiles differ in <b>page layout and export</b>:</p>
+      <ul>
+        <li><b>Manuscript</b> (US Letter / UK A4) — a layout for submitting to an agent or publisher: double spacing, ragged-right (not justified), a 0.5″ first-line indent, an optional title page and running head (surname / TITLE / page), and optional page numbers in the header. Exports to .docx, each chapter on a new page.</li>
+        <li><b>Print book</b> (6×9″ or B-format) — a layout close to a finished book: justified text, mirror margins with room for binding, hyphenation (en-US/en-GB) and widow/orphan control. Page numbers aren't added here (see above). Exports to .docx.</li>
+        <li><b>e-Book</b> — instead of a fixed page, a reflowable text for readers: <b>Download EPUB</b> creates a ready .epub (with a table of contents and chapter breaks); <b>Download e-book</b> a .html for conversion in Calibre. In both, hard spaces revert to normal so the text scales well; margin and page-size settings don't matter here.</li>
+      </ul>
+      <p class="note">After export it's worth checking the file in the target program: .docx in Word/LibreOffice, EPUB/HTML in Calibre or a reader.</p>
+      <h3>What AI Detox detects</h3>
+      <p>AI Detox (a mode above the preview) highlights common “machine-style” tells so they're easier to catch and rewrite in your own voice. It detects four things:</p>
+      <ol>
+        <li><b>AI clichés and buzzwords</b> <span style="background:rgba(214,80,64,.34);border-radius:2px;padding:0 4px">light red</span> — overused words and their forms, e.g.: delve, tapestry, testament, navigate, intricate, seamless, leverage, vibrant, beacon, symphony, mosaic, labyrinth, myriad, embark, resonate (e.g. “a tapestry of memories”).</li>
+        <li><b>Negation contrast</b> <span style="background:rgba(150,100,200,.3);border-radius:2px;padding:0 4px">light purple</span> — whole sentences describing something by what it isn't: the word “not” (or “never”, “nothing”) with “but”, “rather”, “instead” or “merely” within a few words (e.g. “It was not anger but grief.”).</li>
+        <li><b>Moralizing paragraph ending</b> <span style="background:rgba(230,180,70,.42);border-radius:2px;padding:0 4px">light yellow</span> — a paragraph's last sentence opening with a forced summary: “In the end…”, “Ultimately…”, “After all…”, “It was a reminder that…”, “At the end of the day…”.</li>
+        <li><b>Triads</b> <span style="background:rgba(228,110,160,.32);border-radius:2px;padding:0 4px">light pink</span> — symmetrical three-part lists that lull the rhythm: “X, Y, and Z” (e.g. “tired, hungry, and lost”).</li>
+      </ol>
+      <p>Highlights refresh as you write.</p>
+      <h3>AI Detox limitations</h3>
+      <p>AI Detox deliberately <b>uses no AI model</b>. That's why the program is free and your text never leaves your computer — nothing goes to any external AI. In return it works on <b>patterns</b> (text matches), not on understanding meaning. This means:</p>
+      <ul>
+        <li>it shows <b>candidates to check, not errors</b> — the decision is always yours;</li>
+        <li>false positives happen (e.g. a natural “I don't know, but…”, an ordinary use of “vibrant”);</li>
+        <li>the <b>triads</b> rule is the least accurate: it recognises word order, not part of speech, so it sometimes highlights an ordinary list (“John, Peter, and Anna”). Treat these spots as a “stop and look” signal, not a verdict.</li>
+      </ul>
+      <h3>Noise meter</h3>
+      <p>A separate mode (next to AI Detox) that highlights — in a single <span style="background:rgba(120,132,150,.4);border-radius:2px;padding:0 4px">grey</span> colour — words that dilute prose, and shows the <b>% of words</b> counted as noise at the top (the lower, the denser the text). It covers two things:</p>
+      <ol>
+        <li><b>Filler words</b> — “that”, “which”, “who”, “very”, “really”, “just”, “quite”, “rather”, plus “sort of”, “kind of”.</li>
+        <li><b>The weak verb “to be”</b> — forms: is, are, was, were, be, been… A frequent “to be” can usually be replaced with a stronger verb.</li>
+      </ol>
+      <p class="note">The same caveat as for AI Detox: <b>candidates, not errors</b>, no AI model and no text sent anywhere. “that” and “to be” are very common, so there will be many hits — the point is to draw attention, not to remove everything.</p>`,
+  contactBody: `<p>Have a question, an idea for an improvement, or a bug to report? Write to us — we try to reply within <b>24 hours</b>.</p>
+      <h3>Email</h3>
+      <p><a href="mailto:info@akapitly.com">info@akapitly.com</a></p>`
+};
+const I18N_NODES = [];
+function captureI18n(){
+  I18N_NODES.length = 0;
+  document.querySelectorAll("[data-en]").forEach(el=>I18N_NODES.push({el:el, t:"text", pl:el.textContent, en:el.getAttribute("data-en")}));
+  document.querySelectorAll("[data-en-ph]").forEach(el=>I18N_NODES.push({el:el, t:"ph", pl:el.getAttribute("placeholder")||"", en:el.getAttribute("data-en-ph")}));
+  document.querySelectorAll("[data-en-title]").forEach(el=>I18N_NODES.push({el:el, t:"title", pl:el.getAttribute("title")||"", en:el.getAttribute("data-en-title")}));
+  for(const id in EN_HTML){ const el = document.getElementById(id); if(el) I18N_NODES.push({el:el, t:"html", pl:el.innerHTML, en:EN_HTML[id]}); }
+}
+function applyI18n(){
+  const en = (LANG==="en");
+  for(const it of I18N_NODES){
+    const v = en ? it.en : it.pl;
+    if(v==null) continue;
+    if(it.t==="text") it.el.textContent = v;
+    else if(it.t==="html") it.el.innerHTML = v;
+    else if(it.t==="ph") it.el.setAttribute("placeholder", v);
+    else if(it.t==="title") it.el.setAttribute("title", v);
+  }
+  document.documentElement.setAttribute("lang", LANG);
+  const og = document.querySelector('meta[property="og:locale"]'); if(og) og.setAttribute("content", en ? "en_US" : "pl_PL");
+  if(typeof syncVariantUI === "function") syncVariantUI();
+}
+function syncThemeBtn(){ const b = document.getElementById("themeBtn"); if(!b) return; b.textContent = document.documentElement.classList.contains("light") ? t("themeDark") : t("themeLight"); }
+function syncLangBtn(){ const b = document.getElementById("langBtn"); if(!b) return; b.textContent = (LANG==="en") ? "PL" : "EN"; b.setAttribute("title", (LANG==="en") ? "Przełącz na polski" : "Switch to English"); }
+function setLang(l){
+  LANG = (l==="en") ? "en" : "pl";
+  try{ localStorage.setItem("akapitly_lang", LANG); }catch(e){}
+  applyI18n(); syncLangBtn(); syncThemeBtn();
+  if(typeof updateExportButtons === "function") updateExportButtons();
+  const pg = document.getElementById("page"); if(pg && pg.querySelector(".empty")) pg.innerHTML = emptyPageHTML();
+  if(typeof applyView === "function") applyView();
+  paintSavedMark();
+}
+
+/* ===================== WIĄZANIA ===================== */
+let editT;
+document.addEventListener("DOMContentLoaded", ()=>{
+  try{ document.execCommand("styleWithCSS", false, false); }catch(e){}
+  if(window.pdfjsLib){ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js"; }catch(e){} }
+
+  loadProject();
+  applyPreview(); fillSettingsInputs();
+  loadActiveIntoUI(); refreshList(); updateBasicStats();
+
+  LANG = getInitialLang();
+  VARIANT = getInitialVariant();
+  captureI18n();
+  applyI18n();
+  loadActiveIntoUI(); refreshList(); updateBasicStats();
+  if(LANG === "en" && PROJECT_FRESH){ applyProfile((project.settings && project.settings.profile) || "maszynopis"); }
+  if(typeof updateExportButtons === "function") updateExportButtons();
+  { const pg = document.getElementById("page"); if(pg && pg.querySelector(".empty")) pg.innerHTML = emptyPageHTML(); }
+  if(LANG === "en" && typeof applyView === "function") applyView();
+  const langBtn = document.getElementById("langBtn");
+  if(langBtn){ syncLangBtn(); langBtn.addEventListener("click", ()=>setLang(LANG==="en"?"pl":"en")); }
+  { const vu=document.getElementById("vUS"), vk=document.getElementById("vUK");
+    if(vu) vu.addEventListener("click", ()=>setVariant("us"));
+    if(vk) vk.addEventListener("click", ()=>setVariant("uk")); }
+
+  document.getElementById("format").addEventListener("click", render);
+  document.getElementById("dl1").addEventListener("click", ()=>{ if(currentProfileIsEbook()) downloadEbookOne(); else downloadOne(); });
+  document.getElementById("dlall").addEventListener("click", ()=>{ if(currentProfileIsEbook()) downloadEbookAll(); else downloadAll(); });
+  document.getElementById("dlepub").addEventListener("click", downloadEpub);
+  document.getElementById("modeLen").addEventListener("click", ()=>setMode("paralen"));
+  document.getElementById("modeSent").addEventListener("click", ()=>setMode("parasent"));
+  document.getElementById("modeSentLen").addEventListener("click", ()=>setMode("sentlen"));
+  document.getElementById("modeDetoks").addEventListener("click", ()=>setMode("detoks"));
+  document.getElementById("modeSzum").addEventListener("click", ()=>setMode("szum"));
+  document.getElementById("viewClear").addEventListener("click", clearHighlight);
+  const helpModal = document.getElementById("helpModal");
+  document.getElementById("poradnikBtn").addEventListener("click", ()=>window.open((LANG==="en")?"/guide/":"/poradnik/","_blank","noopener"));
+  document.getElementById("helpBtn").addEventListener("click", ()=>helpModal.classList.add("show"));
+  document.getElementById("helpClose").addEventListener("click", ()=>helpModal.classList.remove("show"));
+  helpModal.addEventListener("click", e=>{ if(e.target===helpModal) helpModal.classList.remove("show"); });
+  const contactModal = document.getElementById("contactModal");
+  document.getElementById("contactBtn").addEventListener("click", ()=>contactModal.classList.add("show"));
+  document.getElementById("mobileGateBtn").addEventListener("click", ()=>document.documentElement.classList.add("mg-go"));
+  document.getElementById("contactClose").addEventListener("click", ()=>contactModal.classList.remove("show"));
+  contactModal.addEventListener("click", e=>{ if(e.target===contactModal) contactModal.classList.remove("show"); });
+  const infoModal = document.getElementById("infoModal");
+  document.getElementById("infoBtn").addEventListener("click", ()=>infoModal.classList.add("show"));
+  document.getElementById("infoClose").addEventListener("click", ()=>infoModal.classList.remove("show"));
+  infoModal.addEventListener("click", e=>{ if(e.target===infoModal) infoModal.classList.remove("show"); });
+  helpModal.addEventListener("click", e=>{ const a = e.target.closest ? e.target.closest("#helpToInfo") : null; if(a){ e.preventDefault(); helpModal.classList.remove("show"); infoModal.classList.add("show"); } });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ helpModal.classList.remove("show"); contactModal.classList.remove("show"); infoModal.classList.remove("show"); } });
+  document.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && (e.key==="s"||e.key==="S")){ e.preventDefault(); saveNow(); } });
+  if(project && project.savedAt){ lastSavedAt = new Date(project.savedAt); }
+  paintSavedMark();
+  const themeBtn = document.getElementById("themeBtn");
+  syncThemeBtn();
+  themeBtn.addEventListener("click", ()=>{ const light = document.documentElement.classList.toggle("light"); try{ localStorage.setItem("akapitly_theme", light ? "light" : "dark"); }catch(e){} syncThemeBtn(); });
+  document.getElementById("addch").addEventListener("click", addChapter);
+  document.getElementById("clear").addEventListener("click", clearActive);
+
+  document.getElementById("pfManu").addEventListener("click", ()=>applyProfile("maszynopis"));
+  document.getElementById("pfBook").addEventListener("click", ()=>applyProfile("ksiazka"));
+  document.getElementById("pfEbook").addEventListener("click", ()=>applyProfile("ebook"));
+  document.getElementById("selPage").addEventListener("change", changePageSize);
+  document.getElementById("selLine").addEventListener("change", readSettingsInputs);
+  ["inFont","inIndent","inMT","inMB","inML","inMR"].forEach(id=>document.getElementById(id).addEventListener("input", ()=>{ clearTimeout(editT); editT = setTimeout(readSettingsInputs, 250); }));
+
+  document.getElementById("exportProj").addEventListener("click", exportProject);
+  document.getElementById("importProj").addEventListener("click", ()=>document.getElementById("projfile").click());
+  document.getElementById("projfile").addEventListener("change", e=>{ importProject(e.target.files[0]); e.target.value = ""; });
+  document.getElementById("freqBtn").addEventListener("click", analyzeRepetition);
+  document.getElementById("freqbox").addEventListener("click", e=>{
+    const op = e.target.closest("[data-open]"); if(op){ pickOpening(op.dataset.open, op.dataset.label); return; }
+    const el = e.target.closest("[data-stem]"); if(!el) return;
+    pickWord(el.dataset.stem, el.dataset.label || el.textContent.trim());
+  });
+  document.getElementById("freqbox").addEventListener("keydown", e=>{
+    if(e.key!=="Enter" && e.key!==" ") return;
+    const op = e.target.closest("[data-open]"); if(op){ e.preventDefault(); pickOpening(op.dataset.open, op.dataset.label); return; }
+    const el = e.target.closest("[data-stem]"); if(!el) return;
+    e.preventDefault(); pickWord(el.dataset.stem, el.dataset.label || el.textContent.trim());
+  });
+  ["inAuthor","inMsTitle","inContact"].forEach(id=>document.getElementById(id).addEventListener("input", ()=>{ clearTimeout(editT); editT = setTimeout(readSubmissionInputs, 300); }));
+  ["ckTitlePage","ckHeader"].forEach(id=>document.getElementById(id).addEventListener("change", readSubmissionInputs));
+  document.getElementById("selPageNum").addEventListener("change", readSubmissionInputs);
+
+  document.getElementById("src").addEventListener("input", ()=>{
+    const ch = activeChapter(); if(ch){ ch.text = document.getElementById("src").value; }
+    updateBasicStats();
+    clearTimeout(editT); editT = setTimeout(()=>{ refreshList(); saveProject(); }, 400);
+  });
+  document.getElementById("title").addEventListener("input", ()=>{
+    const ch = activeChapter(); if(ch){ ch.title = document.getElementById("title").value.trim(); }
+    clearTimeout(editT); editT = setTimeout(()=>{ refreshList(); saveProject(); }, 400);
+  });
+  document.getElementById("hasHeader").addEventListener("change", ()=>{
+    const ch = activeChapter(); if(ch){ ch.hasHeader = document.getElementById("hasHeader").checked; }
+    refreshList(); saveProject();
+  });
+
+  const page = document.getElementById("page");
+  page.addEventListener("input", ()=>{
+    clearTimeout(editT);
+    editT = setTimeout(()=>{
+      const ch = activeChapter(); if(ch){ ch.html = cleanCloneHTML(); }
+      if(findStem) repaintActiveFind();
+      else if(findOpening) repaintActiveOpening();
+      else if(analysisMode === "sentlen") repaintActiveSentences();
+      else if(analysisMode === "detoks") repaintActiveDetox();
+      else if(analysisMode === "szum") repaintActiveSzum();
+      else paintParagraphs(page);
+      computeStatsSpark(page); saveProject();
+    }, 320);
+  });
+
+  document.getElementById("loadtxt").addEventListener("click", ()=>document.getElementById("file").click());
+  document.getElementById("file").addEventListener("change", e=>{ handleFile(e.target.files[0]); e.target.value = ""; });
+  const ta = document.getElementById("src");
+  ta.addEventListener("dragover", e=>{ e.preventDefault(); });
+  ta.addEventListener("drop", e=>{ const f = e.dataTransfer.files[0]; if(f){ e.preventDefault(); handleFile(f); } });
+});
+</script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
